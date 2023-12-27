@@ -11,9 +11,9 @@ HCustomTabWgt::HCustomTabWgt(QWidget* parent,int nrow, int ncolumn)
     initFrozenFrame();
     initFrame();
 
-    for (int i = 0; i < 10; i++)
-        appendRowData();
-
+    //for (int i = 0; i < 10; i++)
+    //    appendRowData();
+    
 }
 
 HCustomTabWgt::~HCustomTabWgt()
@@ -23,7 +23,7 @@ HCustomTabWgt::~HCustomTabWgt()
 
 void HCustomTabWgt::appendRowData()
 {
-    if (rowCount() >= ROWCOUNTPERPAGE)
+    if (rowCount() >= m_nRowFrame)
         return;
 
     //添加到最后一行
@@ -40,104 +40,153 @@ void HCustomTabWgt::appendRowData()
     }
 }
 
-void HCustomTabWgt::initFrame()
+void HCustomTabWgt::appendHeaderConcent(QStringList strLst)
 {
-    clearContents();
-    setColumnCount(10);
-    horizontalHeader()->setVisible(true);//表头不可见
-    int headerHeight = m_frozenTableWgt->rowHeight(0) +
-        m_frozenTableWgt->rowHeight(1);//设置成被m_frozenTableWgt遮挡住
-    horizontalHeader()->setFixedHeight(headerHeight);
-    verticalHeader()->setVisible(false);//表头不可见
-    //setShowGrid(false);//网格线不可见
-    setEditTriggers(QAbstractItemView::NoEditTriggers);//设置单元格不可编辑
-    setSelectionMode(QAbstractItemView::SingleSelection);//单选
-    setSelectionBehavior(QAbstractItemView::SelectRows);//选行`
-    horizontalHeader()->setStretchLastSection(true);//最后一个单元格扩展
-    setFocusPolicy(Qt::NoFocus);//解决选中虚框问题
-    setFrameShape(QFrame::NoFrame);//去除边框
 
-    setVerticalScrollMode(ScrollPerPixel);
-    setHorizontalScrollMode(ScrollPerPixel);
+}
+void HCustomTabWgt::setFrameFirstColContent(QStringList strlst)
+{
+    //首列的内容，是从数据表的第0行开始的
+    if (strlst.size() <= 0)
+        return;
 
-    //设置行高模式为自动调整（自动拉伸列宽填充窗口，无法手动调整）
-    verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    // 设置列宽模式为自动调整（自动拉伸列宽填充窗口，无法手动调整）
-    horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-    setColumnWidth(0, INT_FIRST_COLUMN_WHEIGHT);
+    //注意更新m_nRowFrame的值，每次修改报表的行时，更新？？？？？
+    if (rowCount() > m_nRowFrame)
+        return;
 
-    setItemDelegate(new ItemDelegate(1));//设置绘画代理（主要在代理中画出来header）
+    for (int nrow = 0; nrow < strlst.size(); nrow++)
+    {
+        setItem(nrow, 0, new QTableWidgetItem(QString("%1:00").arg(strlst.at(nrow))));
+        item(nrow, 0)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    }
 }
 
-void HCustomTabWgt::initOldExample()
+void HCustomTabWgt::setFrozenHeaderContent(QString str)
 {
-    m_frozenTableWgt->setColumnCount(10);//header10列
-    m_frozenTableWgt->setRowCount(2);//header2行
-
-    m_frozenTableWgt->setRowHeight(0, 42);//第一行设置高度42px
-    m_frozenTableWgt->setRowHeight(1, 42);//第二行设置高度42px  
-
-    for (int row = 2; row < m_frozenTableWgt->rowCount(); ++row)//隐藏2行后的行
-        m_frozenTableWgt->setRowHidden(row, true);
-
-    //===================设置header内容=================//
-    //合并单元格
-    m_frozenTableWgt->setSpan(0, 0, 2, 1);//老师ID
-    m_frozenTableWgt->setSpan(0, 1, 2, 1);//老师姓名
-    m_frozenTableWgt->setSpan(0, 2, 2, 1);//老师姓名
-    m_frozenTableWgt->setSpan(0, 3, 1, 4);//最新日期（8月20）
-    m_frozenTableWgt->setSpan(0, 7, 1, 2);//前一日（8月19）
-    m_frozenTableWgt->setSpan(0, 9, 2, 1);//操作
-
-    m_frozenTableWgt->setItem(0, 0, new QTableWidgetItem(QString::fromLocal8Bit("老师ID")));
-    m_frozenTableWgt->setItem(0, 1, new QTableWidgetItem(QString::fromLocal8Bit("老师姓名")));
-    m_frozenTableWgt->setItem(0, 2, new QTableWidgetItem(QString::fromLocal8Bit("老师姓名")));
-    m_frozenTableWgt->setItem(0, 3, new QTableWidgetItem(QString::fromLocal8Bit("8月20日")));
-    m_frozenTableWgt->setItem(0, 7, new QTableWidgetItem(QString::fromLocal8Bit("8月19日")));
-    m_frozenTableWgt->setItem(0, 9, new QTableWidgetItem(QString::fromLocal8Bit("操作")));
-    m_frozenTableWgt->setItem(1, 3, new QTableWidgetItem(QString::fromLocal8Bit("续报率")));
-    m_frozenTableWgt->setItem(1, 4, new QTableWidgetItem(QString::fromLocal8Bit("新学员续报率")));
-    m_frozenTableWgt->setItem(1, 5, new QTableWidgetItem(QString::fromLocal8Bit("续报增长人数")));
-    m_frozenTableWgt->setItem(1, 6, new QTableWidgetItem(QString::fromLocal8Bit("续报增长率")));
-    m_frozenTableWgt->setItem(1, 7, new QTableWidgetItem(QString::fromLocal8Bit("续报增长率")));
-    m_frozenTableWgt->setItem(1, 8, new QTableWidgetItem(QString::fromLocal8Bit("新学员续报率")));
+    //设置设备名称
+    m_frozenTableWgt->setItem(0, 1, new QTableWidgetItem(QString::fromLocal8Bit("%1").arg(str)));
 }
 
-void HCustomTabWgt::initNewFrame()
+void HCustomTabWgt::setFrozenHeaderContent(QStringList strlst)
 {
-    m_frozenTableWgt->setColumnCount(10);//header10列
-    m_frozenTableWgt->setRowCount(2);//header2行
+    if (strlst.size() <= 0)
+        return;
 
-    m_frozenTableWgt->setRowHeight(0, 42);//第一行设置高度42px
-    m_frozenTableWgt->setRowHeight(1, 42);//第二行设置高度42px
+    //注意更新m_nColumnFrame的值，每次修改报表的列时，更新？？？？？
+    if (columnCount() > m_nColumnFrame)
+        return;
 
-    // 设置列宽模式为自动调整（自动拉伸列宽填充窗口，无法手动调整）
-    //为保持表头列宽和数据内容列宽一致，首列宽度必须保持一致
+    //表头第二行的内容，是从数据表的第1列开始的
+    for (int nIndex = 0; nIndex < strlst.size(); nIndex++)
+    {
+        m_frozenTableWgt->setItem(1, nIndex + 1, new QTableWidgetItem(QString::fromLocal8Bit("%1").arg(strlst.at(nIndex))));
+    }
+}
+
+//重新设置某列宽度时，要保持表头和数据表一致
+void HCustomTabWgt::setCloumnWidth(int ncloumn, int nwidth)
+{
+    //设置冻结表头的对应列宽
     m_frozenTableWgt->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    m_frozenTableWgt->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-    m_frozenTableWgt->setColumnWidth(0, INT_FIRST_COLUMN_WHEIGHT); //第一列设置高度42px
+    m_frozenTableWgt->horizontalHeader()->setSectionResizeMode(ncloumn, QHeaderView::Fixed);
+    m_frozenTableWgt->setColumnWidth(ncloumn, nwidth); //第一列设置高度100px
 
-    for (int row = 2; row < m_frozenTableWgt->rowCount(); ++row)//隐藏2行后的行
-        m_frozenTableWgt->setRowHidden(row, true);
-    //===================设置header内容=================//
-    //合并单元格
-    m_frozenTableWgt->setSpan(0, 0, 2, 1);//名称，时间
-    m_frozenTableWgt->setSpan(0, 1, 1, 9);//设备名称
-
-    m_frozenTableWgt->setItem(0, 0, new QTableWidgetItem(QString::fromLocal8Bit("名称时间")));
-    m_frozenTableWgt->setItem(0, 1, new QTableWidgetItem(QString::fromLocal8Bit("设备名称")));
-    m_frozenTableWgt->setItem(1, 1, new QTableWidgetItem(QString::fromLocal8Bit("UA")));
-    m_frozenTableWgt->setItem(1, 2, new QTableWidgetItem(QString::fromLocal8Bit("UB")));
-    m_frozenTableWgt->setItem(1, 3, new QTableWidgetItem(QString::fromLocal8Bit("UC")));
-    m_frozenTableWgt->setItem(1, 4, new QTableWidgetItem(QString::fromLocal8Bit("IA")));
-    m_frozenTableWgt->setItem(1, 5, new QTableWidgetItem(QString::fromLocal8Bit("IB")));
-    m_frozenTableWgt->setItem(1, 6, new QTableWidgetItem(QString::fromLocal8Bit("IC")));
-    m_frozenTableWgt->setItem(1, 7, new QTableWidgetItem(QString::fromLocal8Bit("P")));
-    m_frozenTableWgt->setItem(1, 8, new QTableWidgetItem(QString::fromLocal8Bit("Q")));
-    m_frozenTableWgt->setItem(1, 9, new QTableWidgetItem(QString::fromLocal8Bit("Cos")));
+    //设置显示数据的报表的对应的列宽
+    horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    horizontalHeader()->setSectionResizeMode(ncloumn, QHeaderView::Fixed);
+    setColumnWidth(ncloumn, nwidth);
 }
 
+
+//void HCustomTabWgt::initOldExample()
+//{
+//    m_frozenTableWgt->setColumnCount(10);//header10列
+//    m_frozenTableWgt->setRowCount(2);//header2行
+//
+//    m_frozenTableWgt->setRowHeight(0, 42);//第一行设置高度42px
+//    m_frozenTableWgt->setRowHeight(1, 42);//第二行设置高度42px  
+//
+//    for (int row = 2; row < m_frozenTableWgt->rowCount(); ++row)//隐藏2行后的行
+//        m_frozenTableWgt->setRowHidden(row, true);
+//
+//    //===================设置header内容=================//
+//    //合并单元格
+//    m_frozenTableWgt->setSpan(0, 0, 2, 1);//老师ID
+//    m_frozenTableWgt->setSpan(0, 1, 2, 1);//老师姓名
+//    m_frozenTableWgt->setSpan(0, 2, 2, 1);//老师姓名
+//    m_frozenTableWgt->setSpan(0, 3, 1, 4);//最新日期（8月20）
+//    m_frozenTableWgt->setSpan(0, 7, 1, 2);//前一日（8月19）
+//    m_frozenTableWgt->setSpan(0, 9, 2, 1);//操作
+//
+//    m_frozenTableWgt->setItem(0, 0, new QTableWidgetItem(QString::fromLocal8Bit("老师ID")));
+//    m_frozenTableWgt->setItem(0, 1, new QTableWidgetItem(QString::fromLocal8Bit("老师姓名")));
+//    m_frozenTableWgt->setItem(0, 2, new QTableWidgetItem(QString::fromLocal8Bit("老师姓名")));
+//    m_frozenTableWgt->setItem(0, 3, new QTableWidgetItem(QString::fromLocal8Bit("8月20日")));
+//    m_frozenTableWgt->setItem(0, 7, new QTableWidgetItem(QString::fromLocal8Bit("8月19日")));
+//    m_frozenTableWgt->setItem(0, 9, new QTableWidgetItem(QString::fromLocal8Bit("操作")));
+//    m_frozenTableWgt->setItem(1, 3, new QTableWidgetItem(QString::fromLocal8Bit("续报率")));
+//    m_frozenTableWgt->setItem(1, 4, new QTableWidgetItem(QString::fromLocal8Bit("新学员续报率")));
+//    m_frozenTableWgt->setItem(1, 5, new QTableWidgetItem(QString::fromLocal8Bit("续报增长人数")));
+//    m_frozenTableWgt->setItem(1, 6, new QTableWidgetItem(QString::fromLocal8Bit("续报增长率")));
+//    m_frozenTableWgt->setItem(1, 7, new QTableWidgetItem(QString::fromLocal8Bit("续报增长率")));
+//    m_frozenTableWgt->setItem(1, 8, new QTableWidgetItem(QString::fromLocal8Bit("新学员续报率")));
+//}
+
+//void HCustomTabWgt::initNewFrame()
+//{
+//    m_frozenTableWgt->setColumnCount(10);//header10列
+//    m_frozenTableWgt->setRowCount(2);//header2行
+//
+//    m_frozenTableWgt->setRowHeight(0, INT_HEAD_ROW_HEIGHT);//第一行设置高度42px
+//    m_frozenTableWgt->setRowHeight(1, INT_HEAD_ROW_HEIGHT);//第二行设置高度42px
+//
+//    // 设置列宽模式为自动调整（自动拉伸列宽填充窗口，无法手动调整）
+//    //为保持表头列宽和数据内容列宽一致，首列宽度必须保持一致
+//    m_frozenTableWgt->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+//    m_frozenTableWgt->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+//    m_frozenTableWgt->setColumnWidth(0, INT_FIRST_COLUMN_WIDTH); //第一列设置高度100px
+//
+//    for (int row = 2; row < m_frozenTableWgt->rowCount(); ++row)//隐藏2行后的行
+//        m_frozenTableWgt->setRowHidden(row, true);
+//    //===================设置header内容=================//
+//    //合并单元格
+//    m_frozenTableWgt->setSpan(0, 0, 2, 1);//名称，时间
+//    m_frozenTableWgt->setSpan(0, 1, 1, 9);//设备名称
+//
+//    m_frozenTableWgt->setItem(0, 0, new QTableWidgetItem(QString::fromLocal8Bit("时间/名称")));
+//    m_frozenTableWgt->setItem(0, 1, new QTableWidgetItem(QString::fromLocal8Bit("设备名称")));
+//    m_frozenTableWgt->setItem(1, 1, new QTableWidgetItem(QString::fromLocal8Bit("UA")));
+//    m_frozenTableWgt->setItem(1, 2, new QTableWidgetItem(QString::fromLocal8Bit("UB")));
+//    m_frozenTableWgt->setItem(1, 3, new QTableWidgetItem(QString::fromLocal8Bit("UC")));
+//    m_frozenTableWgt->setItem(1, 4, new QTableWidgetItem(QString::fromLocal8Bit("IA")));
+//    m_frozenTableWgt->setItem(1, 5, new QTableWidgetItem(QString::fromLocal8Bit("IB")));
+//    m_frozenTableWgt->setItem(1, 6, new QTableWidgetItem(QString::fromLocal8Bit("IC")));
+//    m_frozenTableWgt->setItem(1, 7, new QTableWidgetItem(QString::fromLocal8Bit("P")));
+//    m_frozenTableWgt->setItem(1, 8, new QTableWidgetItem(QString::fromLocal8Bit("Q")));
+//    m_frozenTableWgt->setItem(1, 9, new QTableWidgetItem(QString::fromLocal8Bit("Cos")));
+//}
+
+void HCustomTabWgt::setFrozenFrameRow(int nrow)
+{
+    m_frozenTableWgt->setRowCount(nrow);
+}
+
+void HCustomTabWgt::setFrameRow(int nrow)
+{
+    setRowCount(nrow);
+}
+
+void HCustomTabWgt::setColumn(int ncloumn)
+{
+    m_frozenTableWgt->setColumnCount(ncloumn);//header10列
+    this->setColumnCount(ncloumn);
+
+    m_nColumnFrame = ncloumn;
+}
+
+
+////////////////////////////////////////////////////////////////
+//初始化窗口
 void HCustomTabWgt::initFrozenFrame()
 {
     m_frozenTableWgt = new QTableWidget(this);
@@ -148,16 +197,39 @@ void HCustomTabWgt::initFrozenFrame()
     m_frozenTableWgt->horizontalHeader()->setStretchLastSection(true);//最后一个单元格扩展
     m_frozenTableWgt->setFocusPolicy(Qt::NoFocus);//解决选中虚框问题
     m_frozenTableWgt->setFrameShape(QFrame::NoFrame);//去除边框 尴尬
-    m_frozenTableWgt->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);//隐藏滚动条
-    m_frozenTableWgt->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);//
-    m_frozenTableWgt->setHorizontalScrollMode(ScrollPerPixel);
+  //  m_frozenTableWgt->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);//隐藏滚动条
+   // m_frozenTableWgt->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);//
+    //m_frozenTableWgt->setHorizontalScrollMode(ScrollPerPixel);
+    //m_frozenTableWgt->setVerticalScrollMode(ScrollPerPixel);
+    //解决表头不能充满的问题
+    m_frozenTableWgt->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);// 自适应宽度
+    m_frozenTableWgt->horizontalScrollBar()->setDisabled(true);
+    m_frozenTableWgt->horizontalHeader()->setStretchLastSection(true);// 将最后一列填充满表格
 
     m_frozenTableWgt->setItemDelegate(new ItemDelegate(0));//设置绘画代理（主要在代理中画出来header）
 
     viewport()->stackUnder(m_frozenTableWgt);//设置窗口层次
 
-   // initOldExample();
-    initNewFrame();
+    m_frozenTableWgt->setColumnCount(m_nColumnFrame);//header10列
+    m_frozenTableWgt->setRowCount(2);//header2行
+
+    m_frozenTableWgt->setRowHeight(0, INT_HEAD_ROW_HEIGHT);//第一行设置高度42px
+    m_frozenTableWgt->setRowHeight(1, INT_HEAD_ROW_HEIGHT);//第二行设置高度42px
+
+    // 设置列宽模式为自动调整（自动拉伸列宽填充窗口，无法手动调整）
+    //为保持表头列宽和数据内容列宽一致，首列宽度必须保持一致
+    m_frozenTableWgt->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_frozenTableWgt->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+    m_frozenTableWgt->setColumnWidth(0, INT_FIRST_COLUMN_WIDTH); //第一列设置高度100px
+
+    for (int row = 2; row < m_frozenTableWgt->rowCount(); ++row)//隐藏2行后的行
+        m_frozenTableWgt->setRowHidden(row, true);
+    //===================设置header内容=================//
+    //合并单元格
+    m_frozenTableWgt->setSpan(0, 0, 2, 1);//名称，时间
+    m_frozenTableWgt->setSpan(0, 1, 1, m_nColumnFrame - 1 );//设备名称
+    m_frozenTableWgt->setItem(0, 0, new QTableWidgetItem(QString::fromLocal8Bit("时间/名称")));
+    m_frozenTableWgt->setItem(0, 1, new QTableWidgetItem(QString::fromLocal8Bit("设备名称")));
     
     //连接信号槽。用于滚动条联动
     connect(m_frozenTableWgt->verticalScrollBar(), &QAbstractSlider::valueChanged, verticalScrollBar(), &QAbstractSlider::setValue);
@@ -166,6 +238,50 @@ void HCustomTabWgt::initFrozenFrame()
     updateFrozenTableGeometry();//更新位置
     m_frozenTableWgt->show();
 }
+
+void HCustomTabWgt::initFrame()
+{
+    clearContents();
+    setColumnCount(m_nColumnFrame);
+    setRowCount(m_nRowFrame );
+    //设置行高
+   // setRowHeight(m_nRowFrame, ROWHEIGHT);
+
+    horizontalHeader()->setVisible(true);//表头不可见
+    int headerHeight = m_frozenTableWgt->rowHeight(0) + m_frozenTableWgt->rowHeight(1);//设置成被m_frozenTableWgt遮挡住
+    horizontalHeader()->setFixedHeight(headerHeight);
+    verticalHeader()->setVisible(false);//表头不可见
+    //setShowGrid(false);//网格线不可见
+    setEditTriggers(QAbstractItemView::NoEditTriggers);//设置单元格不可编辑
+    setSelectionMode(QAbstractItemView::SingleSelection);//单选
+    setSelectionBehavior(QAbstractItemView::SelectRows);//选行`
+    horizontalHeader()->setStretchLastSection(true);//最后一个单元格扩展
+    setFocusPolicy(Qt::NoFocus);//解决选中虚框问题
+    setFrameShape(QFrame::NoFrame);//去除边框
+
+    setVerticalScrollMode(ScrollPerPixel);//禁用滚动条
+    setHorizontalScrollMode(ScrollPerPixel);
+
+    //设置行高模式为自动调整（自动拉伸列宽填充窗口，无法手动调整）
+    verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    // 设置列宽模式为自动调整（自动拉伸列宽填充窗口，无法手动调整）
+    horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+    setColumnWidth(0, INT_FIRST_COLUMN_WIDTH);
+    
+    //首列默认日报24点
+    for (int nrow = 0; nrow < 24; nrow++)
+    {
+        setItem(nrow, 0, new QTableWidgetItem(QString("%1:00").arg(nrow)));
+        item(nrow, 0)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    }
+    setItemDelegate(new ItemDelegate(1));//设置绘画代理（主要在代理中画出来header）
+}
+
+
+//初始化窗口
+////////////////////////////////////////////////////////////////
+
 
 void HCustomTabWgt::updateFrozenTableGeometry()
 {

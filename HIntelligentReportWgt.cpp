@@ -168,11 +168,19 @@ void HIntelligentReportWgt::initTopWgt()
 void HIntelligentReportWgt::initReportWgt()
 {
     m_pReportWgt = new QWidget(this);
-   // m_pReportWgt->setStyleSheet("background-color:blue;");
+    // m_pReportWgt->setStyleSheet("background-color:blue;");
     m_pReportWgt->setGeometry(0, INI_TOP_HEIGHT, m_rectReport.width(), m_rectReport.height() - INI_TOP_HEIGHT);
 
-    m_pCustomTabWgt = new HCustomTabWgt(m_pReportWgt,m_nRowTab,m_nColumnTab);
+    m_pCustomTabWgt = new HCustomTabWgt(m_pReportWgt, m_nRowTab, m_nColumnTab);
     m_pCustomTabWgt->setGeometry(0, 0, m_rectReport.width(), m_rectReport.height() - INI_TOP_HEIGHT);
+
+    QStringList strlst;
+    for (int n = 1; n <= 20; n++)
+    {
+        strlst.append(QString::fromLocal8Bit("Ò£²â%1").arg(n));
+    }
+    m_pCustomTabWgt->setFrozenHeaderContent(strlst);
+    m_pCustomTabWgt->setColumn(strlst.size());
 
     /*QRect rect = QRect(0, 0, m_pReportWgt->width(), m_pReportWgt->height());
     m_pCustomTabWgt = new HCustomTabWgt(m_pReportWgt,rect,m_nRowTab,m_nColumnTab);

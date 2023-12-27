@@ -86,8 +86,8 @@ void MonitorSys::initUI()
     m_pTitleWgt->setGeometry(0, 0, m_nScreenWidth, INI_TITLE_HEIGHT);
 
     QRect rect = QRect(50, 100, 1550, 750);
-    int nrow = 26;
-    int ncol = 20;
+    int nrow = 24;
+    int ncol = 21;
     m_pIntelligentReportWgt = new HIntelligentReportWgt(this, rect,nrow,ncol);
     m_pIntelligentReportWgt->setGeometry((m_nScreenWidth - rect.width()) / 2, (m_nSCreenHeight - rect.height()) / 2,rect.width(),rect.height());
 

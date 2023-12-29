@@ -1,6 +1,14 @@
 #include"HIntelligentReportWgt.h"
+#include "HGlobalVariable.h"
 #include<QDateTime>
 #include<QMouseEvent>
+
+HIntelligentReportWgt::HIntelligentReportWgt(QWidget* parent, stTableData stTableInfo)
+    :QWidget(parent), m_stTableDataInfo(stTableInfo)
+{
+    m_rectReport = QRect(50, 100, 1550, 750);//处理报表m_pTabWgt不显示的问题
+    initUI();
+}
 
 HIntelligentReportWgt::HIntelligentReportWgt(QWidget* parent, QRect rect, int nrow, int ncolumn)
     : QWidget(parent) , m_rectReport(rect) ,m_nRowTab(nrow) ,m_nColumnTab(ncolumn)
@@ -99,7 +107,8 @@ void HIntelligentReportWgt::initUI()
 void HIntelligentReportWgt::initTopWgt()
 {
     m_pTopWgt = new QWidget(this);
-    m_pTopWgt->setStyleSheet("background-color:green;");
+   // m_pTopWgt->setStyleSheet("background-color:#D5E7FF;");
+    m_pTopWgt->setStyleSheet("background-color: rgba(255, 255, 255, 0);");//设置背景透明
     m_pTopWgt->setFixedHeight(INI_TOP_HEIGHT);
     m_pTopWgt->setGeometry(0, 0, m_rectReport.width(), INI_TOP_HEIGHT);
 
@@ -113,11 +122,11 @@ void HIntelligentReportWgt::initTopWgt()
     m_plbTitle = new QLabel(m_pTopWgt);
     m_plbTitle->setObjectName("QLabel_title");
     m_plbTitle->setText(QString::fromLocal8Bit("智能报表系统"));
-    m_plbTitle->setStyleSheet("QLabel { color: black; font-size: 20px; }");   
+    m_plbTitle->setStyleSheet("QLabel {font-family:Microsoft Yahei; color: blue; font-size: 20px; }");   
 
     m_plbSysTime = new QLabel(m_pTopWgt);   
     m_plbSysTime->setObjectName("QLabel_systime");
-    m_plbSysTime->setStyleSheet("QLabel { color: black; font-size: 20px; }");
+    m_plbSysTime->setStyleSheet("QLabel {font-family:Microsoft Yahei;color: blue; font-size: 20px; }");
     QDateTime current_date_time = QDateTime::currentDateTime();
     //QString current_date = current_date_time.toString("yyyy.MM.dd hh:mm:ss.zzz ddd");
     QString current_date = current_date_time.toString("yyyy.MM.dd ddd");
@@ -139,21 +148,26 @@ void HIntelligentReportWgt::initTopWgt()
     m_pbtnDay->setObjectName("QPushButton_day");
     m_pbtnDay->setText(QString::fromLocal8Bit("日报"));
     m_pbtnDay->setFixedSize(INT_BUTTON_WIDTH, INT_BUTTON_HEIGHT);
+    m_pbtnDay->setStyleSheet("QPushButton {background-color:#f15316; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+
 
     m_pbtnMonth = new QPushButton(m_pTopWgt);
     m_pbtnMonth->setObjectName("QPushButton_month");
     m_pbtnMonth->setText(QString::fromLocal8Bit("月报"));
     m_pbtnMonth->setFixedSize(INT_BUTTON_WIDTH, INT_BUTTON_HEIGHT);
+    m_pbtnMonth->setStyleSheet("QPushButton { background-color:#c3e9e5; border-radius:10px;font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
 
     m_pbtnYear = new QPushButton(m_pTopWgt);
     m_pbtnYear->setObjectName("QPushButton_year");
     m_pbtnYear->setText(QString::fromLocal8Bit("年报"));
     m_pbtnYear->setFixedSize(INT_BUTTON_WIDTH, INT_BUTTON_HEIGHT);
+    m_pbtnYear->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
 
     m_pbtnMore = new QPushButton(m_pTopWgt);
     m_pbtnMore->setObjectName("QPushButton_more");
     m_pbtnMore->setText(QString::fromLocal8Bit("更多"));
     m_pbtnMore->setFixedSize(INT_BUTTON_WIDTH, INT_BUTTON_HEIGHT);
+    m_pbtnMore->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
 
     pBtnHBlayout->addWidget(m_pbtnDay);
     pBtnHBlayout->addWidget(m_pbtnMonth);
@@ -171,6 +185,7 @@ void HIntelligentReportWgt::initReportWgt()
     // m_pReportWgt->setStyleSheet("background-color:blue;");
     m_pReportWgt->setGeometry(0, INI_TOP_HEIGHT, m_rectReport.width(), m_rectReport.height() - INI_TOP_HEIGHT);
 
+    /*//两个QTableWidget实现的
     m_pCustomTabWgt = new HCustomTabWgt(m_pReportWgt, m_nRowTab, m_nColumnTab);
     m_pCustomTabWgt->setGeometry(0, 0, m_rectReport.width(), m_rectReport.height() - INI_TOP_HEIGHT);
 
@@ -181,11 +196,12 @@ void HIntelligentReportWgt::initReportWgt()
     }
     m_pCustomTabWgt->setFrozenHeaderContent(strlst);
     m_pCustomTabWgt->setColumn(strlst.size());
+    */
 
-    /*QRect rect = QRect(0, 0, m_pReportWgt->width(), m_pReportWgt->height());
-    m_pCustomTabWgt = new HCustomTabWgt(m_pReportWgt,rect,m_nRowTab,m_nColumnTab);
-    m_pCustomTabWgt->setGeometry(rect);*/
-
-   
+	QRect rect = QRect(0, 0, m_pReportWgt->width(), m_pReportWgt->height());
+  //  m_pTabWgt = new ZTableWgt(m_pReportWgt, m_nRowTab, m_nColumnTab);
+    m_pTabWgt = new ZTableWgt(m_pReportWgt, m_stTableDataInfo);
+    m_pTabWgt->setGeometry(rect);
+       
 
 }

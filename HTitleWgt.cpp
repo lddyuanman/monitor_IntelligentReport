@@ -1,4 +1,5 @@
 #include"HTitleWgt.h"
+#include "HGlobalVariable.h"
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 
@@ -19,8 +20,8 @@ HMonSysTitleWgt::~HMonSysTitleWgt()
 
 void HMonSysTitleWgt::initUI()
 {
-   // this->setStyleSheet("background-color:#7F7F7F;");
-    this->setStyleSheet("background-color:#FCFCFC;");
+   this->setStyleSheet("background-color:#FCFCFC;");
+   // this->setStyleSheet("background-color:#D5E7FF;");
 
     m_pWndTitle = new QWidget(this);
     m_pWndTitle->setFixedHeight(INI_TITLE_HEIGHT);
@@ -64,16 +65,22 @@ void HMonSysTitleWgt::initUI()
     m_pbtnDay->setObjectName(QString::fromUtf8("minPushButton"));
     m_pbtnDay->setText(QString::fromLocal8Bit("最小化"));
     m_pbtnDay->setFixedSize(INT_BTNWIDTH, INT_BTNHEIGHT);
+    m_pbtnDay->setStyleSheet("QPushButton {background-color:#FCFCFC; border-radius:5px; font-family:Microsoft Yahei; color: black; font-size: 15px; }");
+
 
     m_pbtnMonth = new QPushButton(m_pWndTitle);
     m_pbtnMonth->setObjectName(QString::fromUtf8("maxPushButton"));
     m_pbtnMonth->setText(QString::fromLocal8Bit("还原"));
     m_pbtnMonth->setFixedSize(INT_BTNWIDTH, INT_BTNHEIGHT);
+    m_pbtnMonth->setStyleSheet("QPushButton {background-color:#FCFCFC; border-radius:5px; font-family:Microsoft Yahei; color: black; font-size: 15px; }");
+
 
     QPushButton* m_pbtnYear = new QPushButton(m_pWndTitle);
     m_pbtnYear->setObjectName(QString::fromUtf8("closePushButton"));
     m_pbtnYear->setText(QString::fromLocal8Bit("关闭"));
     m_pbtnYear->setFixedSize(INT_BTNWIDTH, INT_BTNHEIGHT);
+    m_pbtnYear->setStyleSheet("QPushButton {background-color:#FCFCFC; border-radius:5px; font-family:Microsoft Yahei; color: black; font-size: 15px; }");
+
 
     pBtnHBlayout->addWidget(m_pbtnDay);
     pBtnHBlayout->addWidget(m_pbtnMonth);

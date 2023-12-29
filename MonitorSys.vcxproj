@@ -99,6 +99,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ZTableWgt.cpp" />
     <QtRcc Include="MonitorSys.qrc" />
     <QtUic Include="MonitorSys.ui" />
     <QtMoc Include="MonitorSys.h" />
@@ -116,6 +117,7 @@
     <QtMoc Include="HTitleWgt.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="ZTableWgt.h" />
     <QtMoc Include="HCustomTabWgt.h" />
     <ClInclude Include="HDatabase.h" />
     <QtMoc Include="HExampleWgt.h" />

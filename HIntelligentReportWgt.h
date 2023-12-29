@@ -13,6 +13,11 @@
 #include <QRect>
 
 #include "HCustomTabWgt.h"
+#include "ZTableWgt.h"
+#include "HDataStruct.h"
+//#ifdef _DEBUG
+//#include "ZCustomTabWgt.h"
+//#endif // _DEBUG
 
 #define INI_TOP_HEIGHT 50
 #define INT_BUTTON_WIDTH 50
@@ -23,6 +28,7 @@ class HIntelligentReportWgt : public QWidget
     Q_OBJECT
 
 public:
+    HIntelligentReportWgt(QWidget* parent = Q_NULLPTR, stTableData stTable = {});
     HIntelligentReportWgt(QWidget* parent = Q_NULLPTR, QRect rect = QRect(0,0,0,0),int nrow = 0, int ncolumn = 0);
     ~HIntelligentReportWgt();
 
@@ -52,14 +58,16 @@ private:
     QWidget* m_pReportWgt;//报表窗口
    
 
-    QTableWidget* m_pTabWgt;
+   // QTableWidget* m_pTabWgt;
 
     HCustomTabWgt* m_pCustomTabWgt;//用户自定义报表
+    ZTableWgt* m_pTabWgt;//报表窗口
 
 
     int  m_nRowTab;
     int  m_nColumnTab;
     QRect    m_rectReport;//窗口初始位置、大小
+    stTableData m_stTableDataInfo;//表数据
 
     //鼠标拖动窗体移动
     bool        m_bDrag;

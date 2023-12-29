@@ -11,7 +11,7 @@
 #define INI_LABEL_HEIGHT 50
 #define INT_NAMEWIDTH 100
 #define INT_LABWIDTH  40
-#define INT_BTNWIDTH  50
+#define INT_BTNWIDTH  45
 #define INT_BTNHEIGHT 35
 
 class HMonSysTitleWgt : public QWidget

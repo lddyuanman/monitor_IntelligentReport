@@ -5,6 +5,7 @@
 #include "ui_MonitorSys.h"
 #include "HTitleWgt.h"
 #include "HIntelligentReportWgt.h"
+#include "HDataStruct.h"
 
 #define INT_NORMAL_HEIGHT     800
 #define INT_NORMAL_WIDTH     1500
@@ -23,6 +24,8 @@ public:
     void mouseReleaseEvent(QMouseEvent* event);
 
     QSize getScreenSize();
+    void  setDataInfo(stTableData stTabInfo);//从配置文件中获取信息
+    
 
 private:
     void initUI();
@@ -41,6 +44,8 @@ private:
     int m_nScreenWidth;
     int m_nSCreenHeight;
     bool m_bWndMaxFlag;
+
+    stTableData m_stTabInfoFromFile;
 
 
     //鼠标拖动窗体移动

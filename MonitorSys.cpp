@@ -74,6 +74,22 @@ void MonitorSys::showEvent(QShowEvent* e)
     QWidget::showEvent(e);
 }
 
+
+void MonitorSys::setDataInfo(stTableData stTabInfo)
+{
+	//从配置文件读表数据
+	//数据在配置文件中读写
+    m_stTabInfoFromFile.begin = stTabInfo.begin;
+    m_stTabInfoFromFile.end = stTabInfo.end;
+    m_stTabInfoFromFile.ncolumn = stTabInfo.ncolumn;
+    m_stTabInfoFromFile.nrow = stTabInfo.nrow;
+    m_stTabInfoFromFile.strlstFirstColContent.clear();
+    m_stTabInfoFromFile.strlstFirstColContent = stTabInfo.strlstFirstColContent;
+    m_stTabInfoFromFile.strFirstRowContent = stTabInfo.strFirstRowContent;
+    m_stTabInfoFromFile.strlstSecondRowContent.clear();
+    m_stTabInfoFromFile.strlstSecondRowContent = stTabInfo.strlstSecondRowContent;
+}
+
 void MonitorSys::initUI()
 {
     //隐藏工具栏
@@ -86,9 +102,26 @@ void MonitorSys::initUI()
     m_pTitleWgt->setGeometry(0, 0, m_nScreenWidth, INI_TITLE_HEIGHT);
 
     QRect rect = QRect(50, 100, 1550, 750);
-    int nrow = 24;
-    int ncol = 21;
-    m_pIntelligentReportWgt = new HIntelligentReportWgt(this, rect,nrow,ncol);
+    //int nrow = 24;
+    //int ncol = 21;
+    //m_pIntelligentReportWgt = new HIntelligentReportWgt(this, rect,nrow,ncol);
+    
+    stTableData stTabDataInfo;
+    stTabDataInfo.begin = QPoint(0, 0);
+    stTabDataInfo.end = QPoint(1550, 750);
+    stTabDataInfo.ncolumn = 21;
+    stTabDataInfo.nrow = 26;
+    stTabDataInfo.strFirstRowContent = QString::fromLocal8Bit("设备名称");
+    for (int n = 0;n <20; n++)
+    {
+        stTabDataInfo.strlstSecondRowContent.append(QString::fromLocal8Bit("遥测%1").arg(n));
+    }
+	for (int n = 0; n < 24; n++)
+	{
+		stTabDataInfo.strlstFirstColContent.append(QString::fromLocal8Bit("%1:00").arg(n));
+	}
+	m_pIntelligentReportWgt = new HIntelligentReportWgt(this, stTabDataInfo);
+
     m_pIntelligentReportWgt->setGeometry((m_nScreenWidth - rect.width()) / 2, (m_nSCreenHeight - rect.height()) / 2,rect.width(),rect.height());
 
     connect(m_pTitleWgt, SIGNAL(sigMinBtnClicked()), this, SLOT(slotMin()));

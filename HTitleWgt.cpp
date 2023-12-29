@@ -90,7 +90,7 @@ void HMonSysTitleWgt::initUI()
     m_pWndTitle->setLayout(pWgtHBlayout);
 
     //信号-槽函数机制
-    connect(m_pbtnDay, SIGNAL(clicked(bool)), this, SLOT(slotMinBtnClicked()));
+    bool b = connect(m_pbtnDay, SIGNAL(clicked(bool)), this, SLOT(slotMinBtnClicked()));
     connect(m_pbtnMonth, SIGNAL(clicked(bool)), this, SLOT(slotMaxBtnClicked()));
     connect(m_pbtnYear, SIGNAL(clicked(bool)), this, SLOT(slotCloseBtnClicked()));
 }

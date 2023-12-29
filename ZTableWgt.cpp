@@ -32,6 +32,18 @@ ZTableWgt::~ZTableWgt()
 
 }
 
+void ZTableWgt::setCurrentColumn(int ncolumn)
+{
+	setColumnCount(ncolumn);//设置列
+	m_nTabColumn = ncolumn + INT_HEAD_COLUMN_COUNT;
+}
+
+void ZTableWgt::setCurrentRow(int nrow)
+{
+	setRowCount(nrow);//设置行
+	m_nTabRow = nrow + INT_HEAD_ROW_COUNT;
+}
+
 void ZTableWgt::setFirstRowContent(QString str)
 {
 	setItem(0, 1, new QTableWidgetItem(QString::fromLocal8Bit("%1").arg(str)));
@@ -40,11 +52,11 @@ void ZTableWgt::setFirstRowContent(QString str)
 void ZTableWgt::setSecondRowContent(QStringList strlst)
 {
 
-	////5列，减去首列，剩4列，第二行开始，即从（1.1）开始
+	////示例：5列，减去首列，剩4列，第二行开始，即从（1.1）开始
 	//setItem(1, 1, new QTableWidgetItem(QString::fromLocal8Bit("1")));
 	//setItem(1, 2, new QTableWidgetItem(QString::fromLocal8Bit("2")));
 	//setItem(1, 3, new QTableWidgetItem(QString::fromLocal8Bit("3")));
-
+	//setItem(1,4, new QTableWidgetItem(QString::fromLocal8Bit("4")));
 
 	if (strlst.size() <= 0)
 	{
@@ -52,7 +64,7 @@ void ZTableWgt::setSecondRowContent(QStringList strlst)
 	}
 	//注意更新m_nColumnFrame的值，每次修改报表的列时，更新？？？？？
 	//数据列数为m_nTabColumn - 1= strlst.size()
-	if (m_nTabColumn != strlst.size() + 1)
+	if (m_nTabColumn != strlst.size() + INT_HEAD_COLUMN_COUNT)
 	{
 		return;
 	}
@@ -65,7 +77,7 @@ void ZTableWgt::setSecondRowContent(QStringList strlst)
 
 void ZTableWgt::setFirstColumnContent(QStringList strlst)
 {
-	/*//6行
+	/*//示例：6行
 	setItem(2, 0, new QTableWidgetItem(QString("1:00")));
 	setItem(3, 0, new QTableWidgetItem(QString("1:00")));
 	setItem(4, 0, new QTableWidgetItem(QString("1:00")));
@@ -92,25 +104,88 @@ void ZTableWgt::setFirstColumnContent(QStringList strlst)
 	}
 }
 
+void ZTableWgt::resetFirstColumnContent(QStringList strLst)
+{
+	deleteAllRows();
+
+	if (m_strlstFirColCon.size() > 0)
+	{
+		m_strlstFirColCon.clear();
+		for (int n = 0; n < strLst.size(); n++)
+		{
+			m_strlstFirColCon.append(strLst.at(n));
+		}
+	}
+
+	addRows(strLst.size());
+	m_nTabRow = strLst.size() + INT_HEAD_ROW_COUNT;
+
+	setFirstColumnContent(strLst);
+}
+
+void ZTableWgt::updateData()
+{
+	//刷新数据
+}
+
 void ZTableWgt::InitTabHeader(QString str)
 {
-	if (INT_HEAD_ROW_COUNT == 2)
+	switch (INT_HEAD_ROW_COUNT) 
 	{
+	case 1:
+		//***
+		break;
+	case 2:
 		//合并单元格
 		setSpan(0, 0, 2, 1);//名称，时间
 		setSpan(0, 1, 1, m_nTabColumn - 1);//设备名称
 		setItem(0, 0, new QTableWidgetItem(QString::fromLocal8Bit("时间/名称")));
 		setItem(0, 1, new QTableWidgetItem(QString::fromLocal8Bit("%1").arg(str)));
+		break;
+	case 3:
+		//***
+		break;
+	default:
+		//***
+		break;
 	}
-	else if ( INT_HEAD_ROW_COUNT == 1)
-	{
-		//增加处理
+}
+
+void ZTableWgt::deleteRow(int nindex)
+{
+}
+
+void ZTableWgt::addRows(int nrows)
+{
+	int rowIndex = this->rowCount();//当前表格的行数
+	//除了表头两行，开始往后插入行
+	for (int n = 0; n < nrows; n++)
+	{		
+		this->insertRow(rowIndex + n);//在最后一行的后面插入一行
 	}
-	else if (INT_HEAD_ROW_COUNT == 3)
-	{
-		//增加处理
-	}
+}
+
+void ZTableWgt::deleteAllRows()
+{	
+	int counter = this->rowCount();
 	
+	if (counter < INT_HEAD_ROW_COUNT)
+	{
+		return;
+	}
+
+	//除了表头两行，删除其他列
+	for (int index = INT_HEAD_ROW_COUNT; index <= counter; index++)
+	{
+		
+		removeRow(INT_HEAD_ROW_COUNT);
+		//QTableWidgetItem* item = this->takeVerticalHeaderItem(index);
+		//delete item;		
+	}
+}
+
+void ZTableWgt::addRow(int nIndex)
+{
 }
 
 void ZTableWgt::initFrame()
@@ -126,25 +201,34 @@ void ZTableWgt::initFrame()
 
 	setColumnCount(m_nTabColumn);//设置列
 	setRowCount(m_nTabRow);//设置行
-
-	setRowHeight(0, INT_HEAD_ROW_HEIGHT);//第一行设置高度42px
-	setRowHeight(1, INT_HEAD_ROW_HEIGHT);//第二行设置高度42px
     
 	//setItemDelegate(new ZItemDelegate(0));//设置绘画代理（主要在代理中画出来header）
 	// 
+	//setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	//setHorizontalScrollMode(ScrollPerPixel);
+	//setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);//隐藏滚动条
+	//setVerticalScrollMode(ScrollPerPixel);
 	//水平设置，表头不能充满的问题
 	horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);// 自适应宽度
 	horizontalScrollBar()->setDisabled(true);//不显示滚动条
-	horizontalHeader()->setStretchLastSection(true);// 将最后一列填充满表格		
+	//horizontalHeader()->setStretchLastSection(true);// 将最后一列填充满表格	
+	
 	horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);	// 设置列宽模式为自动调整（无法手动拉伸）
 	horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);//设置首列固定宽度
 	setColumnWidth(0, INT_FIRST_COLUMN_WIDTH);                      //第一列设置高度100px
-
+    
 	//垂直设置，设置行高模式为自动调整（自动拉伸列宽填充窗口，无法手动调整）
 	verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);// 自适应高度
 	verticalScrollBar()->setDisabled(true);//不显示滚动条
 	verticalHeader()->setStretchLastSection(true);// 将最后一列填充满表格
+
 	verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);// 设置行高模式为自动调整（无法手动拉伸）
+	verticalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);//设置首行固定高度
+	setRowHeight(0, INT_HEAD_ROW_HEIGHT);//第一行设置高度42px
+
+	verticalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);//设置首行固定高度
+	setRowHeight(1, INT_HEAD_ROW_HEIGHT);//第二行设置高度42px
+	
 
 	InitTabHeader(m_strFirstRowContent);
 
@@ -152,6 +236,58 @@ void ZTableWgt::initFrame()
 	show();
 }
 
+void ZTableWgt::setAutoStretchResize()
+{
+}
+
+
+void ZTableWgt::slotDayTableShow()
+{
+	QStringList strlstTime;
+	for (int n = 0; n < INT_DAY_TIME; n++)
+	{
+		strlstTime.append(QString("%1:00").arg(n));
+	}
+
+	resetFirstColumnContent(strlstTime);
+	updateData();
+}
+
+void ZTableWgt::slotMonthTableShow()
+{
+	QStringList strlstTime;
+	for (int n = 1; n <= INT_MONTH_TIME; n++)
+	{
+		strlstTime.append(QString::fromLocal8Bit("%1日").arg(n));
+	}
+
+	resetFirstColumnContent(strlstTime);
+	updateData();
+}
+
+
+void ZTableWgt::slotSeasonTableShow()
+{
+	QStringList strlstTime;
+	for (int n = 1; n <= INT_SEASON_TIME; n++)
+	{
+		strlstTime.append(QString::fromLocal8Bit("第%1季度").arg(n));
+	}
+
+	resetFirstColumnContent(strlstTime);
+	updateData();
+}
+
+void ZTableWgt::slotYearTableShow()
+{
+	QStringList strlstTime;
+	for (int n = 1; n <= INT_YEAR_TIME; n++)
+	{
+		strlstTime.append(QString::fromLocal8Bit("%1月").arg(n));
+	}
+	resetFirstColumnContent(strlstTime);
+	updateData();
+}
 
 
 //绘制m_frozenTableWgtde 的样式，字体、背景颜色等
@@ -184,7 +320,7 @@ void ZItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
 
 			QFont font;
 			font.setFamily("Microsoft YaHei");
-			font.setPixelSize(14);
+			//font.setPixelSize(14);
 			font.setBold(true);
 			painter->setFont(font);
 

@@ -9,8 +9,14 @@
 #include "HDataStruct.h"
 
 #define INT_FIRST_COLUMN_WIDTH 100//表头和表内容首列宽度
-#define INT_HEAD_ROW_HEIGHT 40//表头首行和第二行高度
-#define INT_HEAD_ROW_COUNT  2//表头行数
+#define INT_HEAD_ROW_HEIGHT 30//表头首行和第二行高度
+#define INT_HEAD_ROW_COUNT  2//自定义表头行数
+#define INT_HEAD_COLUMN_COUNT  1//自定义表头列数
+
+#define INT_DAY_TIME  24//日报时段
+#define INT_MONTH_TIME  31//月报时段
+#define INT_YEAR_TIME  12//年报时段
+#define INT_SEASON_TIME  4//年报时段
 
 class ZTableWgt : public QTableWidget
 {
@@ -25,14 +31,31 @@ public:
 private:
 	void initFrame();
 
+	void setAutoStretchResize();
+
+	void setCurrentColumn(int ncolumn);//设置列
+	void setCurrentRow(int nrow);//设置行
 	void setFirstColumnContent(QStringList strLst);//设置首列内容
+	void resetFirstColumnContent(QStringList strLst);//重新设置
 	void setFirstRowContent(QString str);//设置表格首行内容，即设备名称
 	void setSecondRowContent(QStringList strlst);//设置表格第二行显示内容
 	void InitTabHeader(QString str);//设置表头
+	
+
+	void deleteRow(int nindex);//删除某行
+	void deleteAllRows();
+	void addRow(int nindex);//增加某行
+	void addRows(int nrows);
 
 
 	void updateData();//存储值的格式如何定义？？，
 	                  //如果换成月报，年报，存储格式会不会变map还是vector还是结构体
+
+public slots:
+	void slotDayTableShow();
+	void slotMonthTableShow();
+	void slotSeasonTableShow();
+	void slotYearTableShow();
 
 private:
 	int m_nTabRow;

@@ -159,14 +159,12 @@ void MonitorSys::slotMin()
 void MonitorSys::slotMax(bool bMaxFlag)
 {
     if (bMaxFlag)
-    {
-        
+    {        
         setWindowState(Qt::WindowNoState); // »Ö¸´Õý³£×´Ì¬
         this->setGeometry((m_nScreenWidth - INT_NORMAL_WIDTH) / 2, (m_nSCreenHeight - INT_NORMAL_HEIGHT) / 2, INT_NORMAL_WIDTH, INT_NORMAL_HEIGHT);
         m_pTitleWgt->setGeometry(0, 0, INT_NORMAL_WIDTH, INI_TITLE_HEIGHT);
         m_pTitleWgt->reSize(QSize(INT_NORMAL_WIDTH, INI_TITLE_HEIGHT));
-        m_pTitleWgt->setBtnMax();
- 
+        m_pTitleWgt->setBtnMax(); 
     }       
     else
     {

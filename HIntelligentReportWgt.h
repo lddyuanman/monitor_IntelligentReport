@@ -42,9 +42,19 @@ private:
     void initReportWgt();
 
 signals:
-
+    void sigDayTableShow();
+    void sigMonthTableShow();
+	void sigSeasonTableShow();
+    void sigYearTableShow();
+    
 
 public slots:
+    void slotDayBtnClicked();
+    void slotMonthBtnClicked();
+    void slotSeasonBtnClicked();
+    void slotYearBtnClicked();
+    void slotMoreBtnClicked();
+
 
 private:
     QWidget* m_pTopWgt;//顶部窗口
@@ -53,8 +63,9 @@ private:
     QPushButton* m_pbtnDay;
     QPushButton* m_pbtnMonth;
     QPushButton* m_pbtnYear;
-    QPushButton* m_pbtnMore;
+    QPushButton* m_pbtnSeason;
 
+    QPushButton* m_pbtnMore;
     QWidget* m_pReportWgt;//报表窗口
    
 

@@ -150,12 +150,17 @@ void HIntelligentReportWgt::initTopWgt()
     m_pbtnDay->setFixedSize(INT_BUTTON_WIDTH, INT_BUTTON_HEIGHT);
     m_pbtnDay->setStyleSheet("QPushButton {background-color:#f15316; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
 
-
     m_pbtnMonth = new QPushButton(m_pTopWgt);
     m_pbtnMonth->setObjectName("QPushButton_month");
     m_pbtnMonth->setText(QString::fromLocal8Bit("ÔÂ±¨"));
     m_pbtnMonth->setFixedSize(INT_BUTTON_WIDTH, INT_BUTTON_HEIGHT);
     m_pbtnMonth->setStyleSheet("QPushButton { background-color:#c3e9e5; border-radius:10px;font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+
+    m_pbtnSeason = new QPushButton(m_pTopWgt);
+    m_pbtnSeason->setObjectName("QPushButton_season");
+    m_pbtnSeason->setText(QString::fromLocal8Bit("¼¾±¨"));
+    m_pbtnSeason->setFixedSize(INT_BUTTON_WIDTH, INT_BUTTON_HEIGHT);
+    m_pbtnSeason->setStyleSheet("QPushButton { background-color:#c3e9e5; border-radius:10px;font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
 
     m_pbtnYear = new QPushButton(m_pTopWgt);
     m_pbtnYear->setObjectName("QPushButton_year");
@@ -171,11 +176,20 @@ void HIntelligentReportWgt::initTopWgt()
 
     pBtnHBlayout->addWidget(m_pbtnDay);
     pBtnHBlayout->addWidget(m_pbtnMonth);
+    pBtnHBlayout->addWidget(m_pbtnSeason);
     pBtnHBlayout->addWidget(m_pbtnYear);
     pBtnHBlayout->addWidget(m_pbtnMore);
 
+    m_pbtnMore->hide();
+
     pWgthblayout->addLayout(pBtnHBlayout);
     m_pTopWgt->setLayout(pWgthblayout);
+
+   bool b =  connect(m_pbtnDay, SIGNAL(clicked(bool)), this, SLOT(slotDayBtnClicked()));
+    connect(m_pbtnMonth, SIGNAL(clicked(bool)), this, SLOT(slotMonthBtnClicked()));
+    connect(m_pbtnSeason, SIGNAL(clicked(bool)), this, SLOT(slotSeasonBtnClicked()));
+    connect(m_pbtnYear, SIGNAL(clicked(bool)), this, SLOT(slotYearBtnClicked()));
+    connect(m_pbtnMore, SIGNAL(clicked(bool)), this, SLOT(slotMoreBtnClicked()));
 }
 
 
@@ -202,6 +216,56 @@ void HIntelligentReportWgt::initReportWgt()
   //  m_pTabWgt = new ZTableWgt(m_pReportWgt, m_nRowTab, m_nColumnTab);
     m_pTabWgt = new ZTableWgt(m_pReportWgt, m_stTableDataInfo);
     m_pTabWgt->setGeometry(rect);
-       
+
+	bool b = connect(this, SIGNAL(sigDayTableShow()), m_pTabWgt, SLOT(slotDayTableShow()));
+	connect(this, SIGNAL(sigMonthTableShow()), m_pTabWgt, SLOT(slotMonthTableShow()));
+    connect(this, SIGNAL(sigSeasonTableShow()), m_pTabWgt, SLOT(slotSeasonTableShow()));
+	connect(this, SIGNAL(sigYearTableShow()), m_pTabWgt, SLOT(slotYearTableShow()));
+}
+
+
+void HIntelligentReportWgt::slotDayBtnClicked()
+{
+    m_pbtnDay->setStyleSheet("QPushButton {background-color:#f15316; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+	m_pbtnMonth->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+	m_pbtnYear->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+	m_pbtnSeason->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+
+    emit sigDayTableShow();
+}
+
+void HIntelligentReportWgt::slotMonthBtnClicked()
+{
+	m_pbtnMonth->setStyleSheet("QPushButton {background-color:#f15316; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+	m_pbtnDay->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+	m_pbtnYear->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+    m_pbtnSeason->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+
+    emit sigMonthTableShow();
+}
+
+void HIntelligentReportWgt::slotSeasonBtnClicked()
+{
+	m_pbtnSeason->setStyleSheet("QPushButton {background-color:#f15316; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+	m_pbtnDay->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+    m_pbtnMonth->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+	m_pbtnYear->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+
+	emit sigSeasonTableShow();
+}
+
+void HIntelligentReportWgt::slotYearBtnClicked()
+{
+    m_pbtnYear->setStyleSheet("QPushButton {background-color:#f15316; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+	m_pbtnDay->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+    m_pbtnMonth->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+    m_pbtnSeason->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+
+    emit sigYearTableShow();
+}
+
+
+void HIntelligentReportWgt::slotMoreBtnClicked()
+{
 
 }

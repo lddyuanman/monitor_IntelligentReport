@@ -106,29 +106,23 @@
     <QtUic Include="MonitorSys.ui" />
     <QtMoc Include="MonitorSys.h" />
     <ClCompile Include="HCustomTabWgt.cpp" />
-    <ClCompile Include="HDatabase.cpp" />
     <ClCompile Include="HExampleWgt.cpp" />
-    <ClCompile Include="HIntelligentReportWgt.cpp" />
-    <ClCompile Include="HTitleWgt.cpp" />
-    <ClCompile Include="HThreadHandle.cpp" />
-    <ClCompile Include="HXmlProcess.cpp" />
+    <ClCompile Include="ZIntelligentReportWgt.cpp" />
+    <ClCompile Include="ZTitleWgt.cpp" />
     <ClCompile Include="MonitorSys.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="HTitleWgt.h" />
+    <QtMoc Include="ZTitleWgt.h" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ZSetDateWgt.h" />
     <QtMoc Include="ZTableWgt.h" />
     <QtMoc Include="HCustomTabWgt.h" />
-    <ClInclude Include="HDatabase.h" />
     <QtMoc Include="HExampleWgt.h" />
-    <QtMoc Include="HIntelligentReportWgt.h" />
+    <QtMoc Include="ZIntelligentReportWgt.h" />
     <ClInclude Include="HDataStruct.h" />
     <ClInclude Include="HGlobalVariable.h" />
-    <ClInclude Include="HThreadHandle.h" />
-    <ClInclude Include="HXmlProcess.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

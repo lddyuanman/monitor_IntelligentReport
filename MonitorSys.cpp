@@ -98,7 +98,7 @@ void MonitorSys::initUI()
     this->resize(m_nScreenWidth, m_nSCreenHeight);
 
     //基于widget的类，在父窗口创建后，子窗口不显示问题
-    m_pTitleWgt = new HMonSysTitleWgt(this, m_nScreenWidth);
+    m_pTitleWgt = new ZMonSysTitleWgt(this, m_nScreenWidth);
     m_pTitleWgt->setGeometry(0, 0, m_nScreenWidth, INI_TITLE_HEIGHT);
 
     QRect rect = QRect(50, 100, 1550, 750);
@@ -120,7 +120,7 @@ void MonitorSys::initUI()
 	{
 		stTabDataInfo.strlstFirstColContent.append(QString::fromLocal8Bit("%1:00").arg(n));
 	}
-	m_pIntelligentReportWgt = new HIntelligentReportWgt(this, stTabDataInfo);
+	m_pIntelligentReportWgt = new ZIntelligentReportWgt(this, stTabDataInfo);
 
     m_pIntelligentReportWgt->setGeometry((m_nScreenWidth - rect.width()) / 2, (m_nSCreenHeight - rect.height()) / 2,rect.width(),rect.height());
 

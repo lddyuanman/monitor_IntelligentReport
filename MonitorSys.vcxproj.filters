@@ -40,19 +40,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HTitleWgt.cpp">
+    <ClCompile Include="ZTitleWgt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HThreadHandle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HXmlProcess.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HDatabase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HIntelligentReportWgt.cpp">
+    <ClCompile Include="ZIntelligentReportWgt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HExampleWgt.cpp">
@@ -69,13 +60,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="HTitleWgt.h">
+    <QtMoc Include="ZTitleWgt.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="HExampleWgt.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="HIntelligentReportWgt.h">
+    <QtMoc Include="ZIntelligentReportWgt.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="HCustomTabWgt.h">
@@ -89,15 +80,6 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HThreadHandle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HXmlProcess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HDatabase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HGlobalVariable.h">
       <Filter>Header Files</Filter>
     </ClInclude>

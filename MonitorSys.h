@@ -1,10 +1,9 @@
 #pragma once
-
 #include <QtWidgets/QWidget>
 #include<QMouseEvent>
 #include "ui_MonitorSys.h"
-#include "HTitleWgt.h"
-#include "HIntelligentReportWgt.h"
+#include "ZTitleWgt.h"
+#include "ZIntelligentReportWgt.h"
 #include "HDataStruct.h"
 
 #define INT_NORMAL_HEIGHT     800
@@ -38,8 +37,8 @@ public slots:
 private:
     Ui::MonitorSysClass ui;
 
-    HMonSysTitleWgt* m_pTitleWgt;
-    HIntelligentReportWgt* m_pIntelligentReportWgt;
+    ZMonSysTitleWgt* m_pTitleWgt;
+    ZIntelligentReportWgt* m_pIntelligentReportWgt;
 
     int m_nScreenWidth;
     int m_nSCreenHeight;

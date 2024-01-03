@@ -4,6 +4,7 @@
 #include<QScrollBar>
 #include<QPainter>
 
+
 ZTableWgt::ZTableWgt(QWidget* parent, int nrow, int ncolumn, QString str)
 	: QTableWidget(parent), m_nTabRow(nrow), m_nTabColumn(ncolumn) , m_strFirstRowContent(str)
 {
@@ -32,6 +33,20 @@ ZTableWgt::~ZTableWgt()
 
 }
 
+void ZTableWgt::mousePressEvent(QMouseEvent* event) 
+{
+	/*if (event->button() == Qt::RightButton)
+	{
+		QPoint position = event->pos();
+		int x = position.x();
+		int y = position.y();
+
+	}
+	else
+	{
+		mousePressEvent(event);
+	}*/
+}
 void ZTableWgt::setCurrentColumn(int ncolumn)
 {
 	setColumnCount(ncolumn);//设置列
@@ -125,7 +140,10 @@ void ZTableWgt::resetFirstColumnContent(QStringList strLst)
 
 void ZTableWgt::updateData()
 {
-	//刷新数据
+	//刷新数据,从第三行第二列开始填充数据，即（2，1）开始
+    //考虑是用QMap还是QVector
+	//QMap<QString, QList<QString>>,其中QString是遥测点，QList<QString>是对应的时间值，比如日表，QList存储1:00、2:00、3:00、......24:00点的对应的值
+    //QVector<QVector<int>> array(rows,QVector<int>(cols))
 }
 
 void ZTableWgt::InitTabHeader(QString str)
@@ -188,6 +206,18 @@ void ZTableWgt::addRow(int nIndex)
 {
 }
 
+void ZTableWgt::contextMenuEvent(QContextMenuEvent* event)
+{
+	Q_UNUSED(event);
+	QMenu menu;
+	//添加右键菜单的选项
+	menu.addAction("方法1：选项1");
+	menu.addAction("方法1：选项2");
+	menu.addAction("方法1：选项3");
+	//显示menu菜单并设置其显示位置为鼠标位置
+	menu.exec(QCursor::pos());
+}
+
 void ZTableWgt::initFrame()
 {
 	horizontalHeader()->setVisible(false);//表头不可见
@@ -203,7 +233,7 @@ void ZTableWgt::initFrame()
 	setRowCount(m_nTabRow);//设置行
     
 	//setItemDelegate(new ZItemDelegate(0));//设置绘画代理（主要在代理中画出来header）
-	// 
+	 
 	//setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	//setHorizontalScrollMode(ScrollPerPixel);
 	//setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);//隐藏滚动条
@@ -228,7 +258,6 @@ void ZTableWgt::initFrame()
 
 	verticalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);//设置首行固定高度
 	setRowHeight(1, INT_HEAD_ROW_HEIGHT);//第二行设置高度42px
-	
 
 	InitTabHeader(m_strFirstRowContent);
 
@@ -236,10 +265,40 @@ void ZTableWgt::initFrame()
 	show();
 }
 
-void ZTableWgt::setAutoStretchResize()
+void ZTableWgt::tableContexMenuRequested(QPoint& pos)
 {
+	m_pContextMenu->addAction(m_pActionDel);
+	m_pContextMenu->exec(QCursor::pos());
+}
+void ZTableWgt::on_tableViewCustomContextMenuRequested(const QPoint& pos)
+{
+	//! 拓展：此处的pos函数可以使用QTableView的indexAt \
+        函数获取当前鼠标下控件的QModelIndex对象（可用于判断操作）
+	//Q_UNUSED(pos);
+	QTableWidgetItem* item = this->currentItem();
+	if (item == NULL)
+	{
+		return;
+	}
+	QMenu menu;
+	//添加右键菜单的选项
+	menu.addAction("方法2：选项1");
+	menu.addAction("方法2：选项2");
+	menu.addAction("方法2：选项3");
+	//显示menu菜单并设置其显示位置为鼠标位置
+	menu.exec(QCursor::pos());
 }
 
+void ZTableWgt::SlotMenuClicked(QAction* act)
+{
+	/*if (act == m_pActionDel)
+	{
+		int nRow = m_pSelectItem->row();
+		QTableWidgetItem* item =this->item(nRow, 1);
+
+		removeRow(nRow);
+	}*/
+}
 
 void ZTableWgt::slotDayTableShow()
 {

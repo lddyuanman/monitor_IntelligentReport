@@ -64,6 +64,9 @@
     <ClCompile Include="ZTableWgt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ZSetDateWgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="HTitleWgt.h">
@@ -79,6 +82,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ZTableWgt.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ZSetDateWgt.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

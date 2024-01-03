@@ -3,7 +3,6 @@
 * 智能报表窗口: 顶部窗口和报表窗口
 * 
 */
-
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
@@ -11,10 +10,12 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QTableWidget>
 #include <QRect>
+#include <QMenu>
 
 #include "HCustomTabWgt.h"
 #include "ZTableWgt.h"
 #include "HDataStruct.h"
+#include "ZSetDateWgt.h"
 //#ifdef _DEBUG
 //#include "ZCustomTabWgt.h"
 //#endif // _DEBUG
@@ -40,6 +41,7 @@ private:
     void initUI();
     void initTopWgt();
     void initReportWgt();
+    void initMenuWgt();
 
 signals:
     void sigDayTableShow();
@@ -49,6 +51,8 @@ signals:
     
 
 public slots:
+    void onShowMenu(QPoint pos);
+
     void slotDayBtnClicked();
     void slotMonthBtnClicked();
     void slotSeasonBtnClicked();
@@ -66,14 +70,13 @@ private:
     QPushButton* m_pbtnSeason;
 
     QPushButton* m_pbtnMore;
-    QWidget* m_pReportWgt;//报表窗口
-   
-
-   // QTableWidget* m_pTabWgt;
+    QWidget* m_pReportWgt;//报表窗口   
 
     HCustomTabWgt* m_pCustomTabWgt;//用户自定义报表
     ZTableWgt* m_pTabWgt;//报表窗口
 
+    QMenu* m_pMenu;//右键菜单
+    ZSetDateWgt* m_pSetDateWgt;//设置日期窗口
 
     int  m_nRowTab;
     int  m_nColumnTab;

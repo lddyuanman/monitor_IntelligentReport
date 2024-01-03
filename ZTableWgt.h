@@ -1,11 +1,14 @@
 #pragma once
 /*
-* 处理表格部分
+* 处理表格部分,一个QTableWidget完成
 * 注意：行数 = 显示内容list + INT_HEAD_ROW_COUNT，INT_HEAD_ROW_COUNT为表头行数
 *       列数 = 显示内容list + 1，1为首列
 */
 #include <QTableWidget>
 #include <QStyledItemDelegate>
+#include <QMouseEvent>
+#include <QMenu>
+#include <QAction>
 #include "HDataStruct.h"
 
 #define INT_FIRST_COLUMN_WIDTH 100//表头和表内容首列宽度
@@ -27,11 +30,10 @@ public:
 	ZTableWgt(QWidget* parent = Q_NULLPTR, stTableData stTabInfo = {});
 	~ZTableWgt();
 
-
+	void mousePressEvent(QMouseEvent* event);
+	void contextMenuEvent(QContextMenuEvent* event);
 private:
 	void initFrame();
-
-	void setAutoStretchResize();
 
 	void setCurrentColumn(int ncolumn);//设置列
 	void setCurrentRow(int nrow);//设置行
@@ -51,13 +53,23 @@ private:
 	void updateData();//存储值的格式如何定义？？，
 	                  //如果换成月报，年报，存储格式会不会变map还是vector还是结构体
 
+
+
 public slots:
 	void slotDayTableShow();
 	void slotMonthTableShow();
 	void slotSeasonTableShow();
 	void slotYearTableShow();
 
+	void SlotMenuClicked(QAction* act);
+	void tableContexMenuRequested(QPoint& pos);
+	void on_tableViewCustomContextMenuRequested(const QPoint& pos);
+
 private:
+	QMenu* m_pContextMenu;
+	QAction* m_pActionDel;
+
+
 	int m_nTabRow;
 	int m_nTabColumn;
 	QString m_strFirstRowContent;//首行内容，即设备名称

@@ -69,6 +69,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
+    <IncludePath>%USERPROFILE%\AppData\Local\Microsoft\WindowsApps;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
   </PropertyGroup>
@@ -99,6 +100,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ZSetDateWgt.cpp" />
     <ClCompile Include="ZTableWgt.cpp" />
     <QtRcc Include="MonitorSys.qrc" />
     <QtUic Include="MonitorSys.ui" />
@@ -117,6 +119,7 @@
     <QtMoc Include="HTitleWgt.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="ZSetDateWgt.h" />
     <QtMoc Include="ZTableWgt.h" />
     <QtMoc Include="HCustomTabWgt.h" />
     <ClInclude Include="HDatabase.h" />

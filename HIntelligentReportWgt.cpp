@@ -8,6 +8,8 @@ HIntelligentReportWgt::HIntelligentReportWgt(QWidget* parent, stTableData stTabl
 {
     m_rectReport = QRect(50, 100, 1550, 750);//处理报表m_pTabWgt不显示的问题
     initUI();
+
+    initMenuWgt();
 }
 
 HIntelligentReportWgt::HIntelligentReportWgt(QWidget* parent, QRect rect, int nrow, int ncolumn)
@@ -217,10 +219,67 @@ void HIntelligentReportWgt::initReportWgt()
     m_pTabWgt = new ZTableWgt(m_pReportWgt, m_stTableDataInfo);
     m_pTabWgt->setGeometry(rect);
 
-	bool b = connect(this, SIGNAL(sigDayTableShow()), m_pTabWgt, SLOT(slotDayTableShow()));
+	connect(this, SIGNAL(sigDayTableShow()), m_pTabWgt, SLOT(slotDayTableShow()));
 	connect(this, SIGNAL(sigMonthTableShow()), m_pTabWgt, SLOT(slotMonthTableShow()));
     connect(this, SIGNAL(sigSeasonTableShow()), m_pTabWgt, SLOT(slotSeasonTableShow()));
 	connect(this, SIGNAL(sigYearTableShow()), m_pTabWgt, SLOT(slotYearTableShow()));
+}
+
+void HIntelligentReportWgt::initMenuWgt()
+{
+	m_pMenu = new QMenu(this);    //菜单初始化
+	m_pMenu->setStyleSheet("background-color:#1a1a1a;color:#fff;");    //设置菜单样式背景颜色
+
+	//设置菜单项
+	QAction* pSetDate = new QAction(u8"设置日期", this);
+	QAction* pSetAttribute = new QAction(u8"配置属性", this);
+	QAction* pExportTable = new QAction(u8"导出报表", this);
+	QAction* pOpenDirectory = new QAction(u8"打开报表目录", this);
+
+	//将菜单项加入菜单
+	m_pMenu->addAction(pSetDate);
+	//pSetDate->setIcon(QIcon(":/new/prefix1/icon/205设置.png"));    //设置菜单图标
+	pSetDate->setIconVisibleInMenu(true);       //图标设置为可见
+	m_pMenu->addSeparator();  //设置菜单项之间的分隔线
+
+	//其余项设置方法相同
+	m_pMenu->addAction(pSetAttribute);
+	//pSetAttribute->setIcon(QIcon(":/new/prefix1/icon/调试.png"));
+	pSetAttribute->setIconVisibleInMenu(true);
+	m_pMenu->addSeparator();
+	m_pMenu->addAction(pExportTable);
+	//pExportTable->setIcon(QIcon(":/new/prefix1/icon/通讯录.png"));
+	pExportTable->setIconVisibleInMenu(true);
+	m_pMenu->addSeparator();
+	m_pMenu->addAction(pOpenDirectory);
+	//pOpenDirectory->setIcon(QIcon(":/new/prefix1/icon/集群.png"));
+	pOpenDirectory->setIconVisibleInMenu(true);
+
+    m_pSetDateWgt = new ZSetDateWgt(this);
+    m_pSetDateWgt->resize(INI_SETDATEWGT_WIDTH, INI_SETDATEWGT_HEIGHT);
+    m_pSetDateWgt->setGeometry((this->width() - INI_SETDATEWGT_WIDTH )/ 2, (this->height() - INI_SETDATEWGT_HEIGHT ) / 2, INI_SETDATEWGT_WIDTH, INI_SETDATEWGT_HEIGHT);
+	//菜单项按钮关联槽函数
+	//console* con = new console;    //初始化要连接到的模块
+	connect(pSetDate, &QAction::triggered, m_pSetDateWgt, &ZSetDateWgt::slotShowSetDateWgt);
+	//connect(pSetAttribute, &QAction::triggered, con, &console::on_stackedWidget_3_currentChanged);
+	//connect(pExportTable, &QAction::triggered, con, &console::on_stackedWidget_3_currentChanged);
+	//connect(pOpenDirectory, &QAction::triggered, con, &console::on_stackedWidget_3_currentChanged);
+
+	//在鼠标右键点击的地方显示菜单
+    m_pTabWgt->setContextMenuPolicy(Qt::CustomContextMenu);//设置右击菜单
+	bool b = connect(m_pTabWgt, &QTableWidget::customContextMenuRequested, this, &HIntelligentReportWgt::onShowMenu);
+
+}
+
+void HIntelligentReportWgt::onShowMenu(QPoint pos)
+{
+	QTableWidgetItem* selectedItem = m_pTabWgt->itemAt(pos); //获取右击的item
+    /*if (nullptr == selectedItem)
+	{
+		return;
+	}*/
+
+	m_pMenu->popup(m_pTabWgt->viewport()->mapToGlobal(pos));//将菜单显示到鼠标所在位置
 }
 
 

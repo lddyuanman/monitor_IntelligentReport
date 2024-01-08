@@ -4,7 +4,7 @@
 #include "ui_MonitorSys.h"
 #include "ZTitleWgt.h"
 #include "ZIntelligentReportWgt.h"
-#include "HDataStruct.h"
+#include "DataStruct.h"
 
 #define INT_NORMAL_HEIGHT     800
 #define INT_NORMAL_WIDTH     1500

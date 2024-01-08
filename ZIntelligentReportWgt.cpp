@@ -1,7 +1,12 @@
-#include"ZIntelligentReportWgt.h"
-#include "HGlobalVariable.h"
 #include<QDateTime>
 #include<QMouseEvent>
+#include <QApplication>
+#include <QDir>
+#include <QFileDialog>
+#include <QDesktopServices>
+#include <QDesktopWidget>
+#include"ZIntelligentReportWgt.h"
+#include "GlobalVariable.h"
 
 ZIntelligentReportWgt::ZIntelligentReportWgt(QWidget* parent, stTableData stTableInfo)
     :QWidget(parent), m_stTableDataInfo(stTableInfo)
@@ -9,6 +14,7 @@ ZIntelligentReportWgt::ZIntelligentReportWgt(QWidget* parent, stTableData stTabl
     m_rectReport = QRect(50, 100, 1550, 750);//处理报表m_pTabWgt不显示的问题
     initUI();
 
+    m_nTabType = REPORT_DAY;
     initMenuWgt();
 }
 
@@ -87,6 +93,34 @@ ZIntelligentReportWgt::~ZIntelligentReportWgt()
 //    }
 //    this->resize(currentWidth, currentHeight);          // 通过更新图像显示控件的大小来更新图像大小
 //}
+
+void ZIntelligentReportWgt::getReportPath(QString &strpath)
+{
+	QDateTime current_date_time = QDateTime::currentDateTime();
+    QString current_date = current_date_time.toString("yyyy-MM-dd ddd");
+    QString strType;
+    switch (m_nTabType)
+    {
+    case REPORT_DAY:
+        strType = QString::fromLocal8Bit("【日报】");
+        break;
+    case REPORT_MONTH:
+        strType = QString::fromLocal8Bit("【月报】");
+        break;
+    case REPORT_SECSON:
+        strType = QString::fromLocal8Bit("【季报】");
+        break;
+    case REPORT_YEAR:
+        strType = QString::fromLocal8Bit("【年报】");
+        break;
+    default:
+        break;
+    }
+    QString strName = m_plbTitle->text();
+
+    QString str = QDir::currentPath();
+    strpath = QString("%1/export/reports/%2%3(%4).xls").arg(str).arg(strName).arg(strType).arg(current_date);
+}
 
 void ZIntelligentReportWgt::initUI()
 {
@@ -258,20 +292,26 @@ void ZIntelligentReportWgt::initMenuWgt()
     m_pSetDateWgt = new ZSetDateWgt(this);
     m_pSetDateWgt->resize(INI_SETDATEWGT_WIDTH, INI_SETDATEWGT_HEIGHT);
     m_pSetDateWgt->setGeometry((this->width() - INI_SETDATEWGT_WIDTH )/ 2, (this->height() - INI_SETDATEWGT_HEIGHT ) / 2, INI_SETDATEWGT_WIDTH, INI_SETDATEWGT_HEIGHT);
-	//菜单项按钮关联槽函数
+	
+    m_pExportWgt = new ZExportReportWgt(this);
+    m_pExportWgt->resize(INI_EXPORT_WGT_WIDTH, INI_EXPORT_WGT_HEIGHT);
+    m_pExportWgt->setGeometry((this->width() - INI_EXPORT_WGT_WIDTH) / 2, (this->height() - INI_EXPORT_WGT_HEIGHT) / 2, INI_EXPORT_WGT_WIDTH, INI_EXPORT_WGT_HEIGHT);
+
+    //菜单项按钮关联槽函数
 	//console* con = new console;    //初始化要连接到的模块
 	connect(pSetDate, &QAction::triggered, m_pSetDateWgt, &ZSetDateWgt::slotShowSetDateWgt);
-	//connect(pSetAttribute, &QAction::triggered, con, &console::on_stackedWidget_3_currentChanged);
-	//connect(pExportTable, &QAction::triggered, con, &console::on_stackedWidget_3_currentChanged);
-	//connect(pOpenDirectory, &QAction::triggered, con, &console::on_stackedWidget_3_currentChanged);
+	bool b1 = connect(pExportTable, &QAction::triggered, m_pExportWgt, &ZExportReportWgt::slotShowExportWgt);
+    connect(m_pExportWgt, SIGNAL(sigOpenReport()), m_pTabWgt, SLOT(sltOpenReport()));
+
+    connect(pOpenDirectory, &QAction::triggered, this, &ZIntelligentReportWgt::slotOpenDirectory);
 
 	//在鼠标右键点击的地方显示菜单
     m_pTabWgt->setContextMenuPolicy(Qt::CustomContextMenu);//设置右击菜单
-	bool b = connect(m_pTabWgt, &QTableWidget::customContextMenuRequested, this, &ZIntelligentReportWgt::onShowMenu);
+	bool b = connect(m_pTabWgt, &QTableWidget::customContextMenuRequested, this, &ZIntelligentReportWgt::slotShowMenu);
 
 }
 
-void ZIntelligentReportWgt::onShowMenu(QPoint pos)
+void ZIntelligentReportWgt::slotShowMenu(QPoint pos)
 {
 	QTableWidgetItem* selectedItem = m_pTabWgt->itemAt(pos); //获取右击的item
     /*if (nullptr == selectedItem)
@@ -280,8 +320,52 @@ void ZIntelligentReportWgt::onShowMenu(QPoint pos)
 	}*/
 
 	m_pMenu->popup(m_pTabWgt->viewport()->mapToGlobal(pos));//将菜单显示到鼠标所在位置
+
+    QString strPath;
+    getReportPath(strPath);
+    m_pExportWgt->setReportPath(strPath);
+
+    m_pTabWgt->setReportFullPath(strPath);
 }
 
+void ZIntelligentReportWgt::slotOpenDirectory()
+{
+	QString strPath;
+	getReportPath(strPath);
+
+	QFileInfo fileInfo(strPath);
+	QFileDialog* pFilename = new QFileDialog(m_pTabWgt, Qt::Dialog);
+    pFilename->setGeometry((QApplication::desktop()->width() - 800 )/2,(QApplication::desktop()->height() - 480)/2,800, 480);
+	pFilename->setDirectory(fileInfo.absolutePath());//设置打开的默认目录
+	pFilename->setNameFilter(tr("exe(*.xls)"));//设置限定文件类型
+	//pFilename->setOption(QFileDialog::DontResolveSymlinks);//可以加载链接路径而不会跳转
+
+	if (pFilename->exec() != QFileDialog::Accepted)
+	{
+		return;
+	}
+
+	QString strFileName = pFilename->selectedFiles().first();
+
+	delete pFilename;
+
+	if (strFileName.isEmpty())
+	{
+		//QMessageBox::information(this, "Error Message", "No File Selected");
+		return;
+	}
+    QDesktopServices::openUrl(QUrl::fromLocalFile(strFileName));
+
+   /* QString strFileName = QFileDialog::getOpenFileName(this, "Open File", fileInfo.path(),
+        tr("exe(*.xls)"), 0, QFileDialog::DontResolveSymlinks);*/
+    /* 如上，父组件为this；窗口名称为"Open File"；
+      ""和"."都是默认打开工程目录；
+      "exe(*.exe)"代表只允许选择exe类型的文件；
+      第四个参数可以不写，但是为了设置第五个参数，这里设为0；
+      第五个参数是QFileDialog::DontResolveSymlinks，这里用为即使选中的文件为快捷方式或链接，路径也只显示现有路径而不会跳转；QFileDialog::ShowDirsOnly表示只显示文件夹；*/
+
+    //strFileName = QDir::toNativeSeparators(strFileName);//Linux斜杠转Windows反斜杠
+}
 
 void ZIntelligentReportWgt::slotDayBtnClicked()
 {
@@ -289,6 +373,8 @@ void ZIntelligentReportWgt::slotDayBtnClicked()
 	m_pbtnMonth->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
 	m_pbtnYear->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
 	m_pbtnSeason->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+   
+    m_nTabType = REPORT_DAY;
 
     emit sigDayTableShow();
 }
@@ -300,6 +386,8 @@ void ZIntelligentReportWgt::slotMonthBtnClicked()
 	m_pbtnYear->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
     m_pbtnSeason->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
 
+    m_nTabType = REPORT_MONTH;
+
     emit sigMonthTableShow();
 }
 
@@ -310,6 +398,8 @@ void ZIntelligentReportWgt::slotSeasonBtnClicked()
     m_pbtnMonth->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
 	m_pbtnYear->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
 
+    m_nTabType = REPORT_SECSON;
+
 	emit sigSeasonTableShow();
 }
 
@@ -319,6 +409,8 @@ void ZIntelligentReportWgt::slotYearBtnClicked()
 	m_pbtnDay->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
     m_pbtnMonth->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
     m_pbtnSeason->setStyleSheet("QPushButton {background-color:#c3e9e5; border-radius:10px; font-family:Microsoft Yahei; color: blue; font-size: 15px; }");
+
+    m_nTabType = REPORT_YEAR;
 
     emit sigYearTableShow();
 }

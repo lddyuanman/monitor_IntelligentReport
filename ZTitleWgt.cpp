@@ -1,5 +1,5 @@
 #include"ZTitleWgt.h"
-#include "HGlobalVariable.h"
+#include "GlobalVariable.h"
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 

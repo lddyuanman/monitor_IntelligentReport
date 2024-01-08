@@ -11,11 +11,12 @@
 #include <QTableWidget>
 #include <QRect>
 #include <QMenu>
-
 #include "HCustomTabWgt.h"
 #include "ZTableWgt.h"
-#include "HDataStruct.h"
+#include "DataStruct.h"
 #include "ZSetDateWgt.h"
+#include "ZExportReportWgt.h"
+#include "GlobalVariable.h"
 //#ifdef _DEBUG
 //#include "ZCustomTabWgt.h"
 //#endif // _DEBUG
@@ -37,6 +38,7 @@ public:
     //void mouseMoveEvent(QMouseEvent* event);
     //void mouseReleaseEvent(QMouseEvent* event);
     //void wheelEvent(QWheelEvent* event);        // 用鼠标滚轮事件实现图像放大缩小
+    void getReportPath(QString &strpath);
 private:
     void initUI();
     void initTopWgt();
@@ -51,7 +53,7 @@ signals:
     
 
 public slots:
-    void onShowMenu(QPoint pos);
+    void slotShowMenu(QPoint pos);
 
     void slotDayBtnClicked();
     void slotMonthBtnClicked();
@@ -59,7 +61,7 @@ public slots:
     void slotYearBtnClicked();
     void slotMoreBtnClicked();
 
-
+    void slotOpenDirectory();
 private:
     QWidget* m_pTopWgt;//顶部窗口
     QLabel* m_plbTitle;
@@ -77,11 +79,13 @@ private:
 
     QMenu* m_pMenu;//右键菜单
     ZSetDateWgt* m_pSetDateWgt;//设置日期窗口
+    ZExportReportWgt* m_pExportWgt;//导出报表窗口
 
     int  m_nRowTab;
     int  m_nColumnTab;
     QRect    m_rectReport;//窗口初始位置、大小
     stTableData m_stTableDataInfo;//表数据
+    ReportType m_nTabType;//报表类型
 
     //鼠标拖动窗体移动
     bool        m_bDrag;

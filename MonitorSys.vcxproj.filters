@@ -58,6 +58,9 @@
     <ClCompile Include="ZSetDateWgt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ZExportReportWgt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ZTitleWgt.h">
@@ -78,12 +81,15 @@
     <QtMoc Include="ZSetDateWgt.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="ZExportReportWgt.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HGlobalVariable.h">
+    <ClInclude Include="GlobalVariable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HDataStruct.h">
+    <ClInclude Include="DataStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

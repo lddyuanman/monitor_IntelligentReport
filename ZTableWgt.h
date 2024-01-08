@@ -9,7 +9,8 @@
 #include <QMouseEvent>
 #include <QMenu>
 #include <QAction>
-#include "HDataStruct.h"
+#include "DataStruct.h"
+#include "GlobalVariable.h"
 
 #define INT_FIRST_COLUMN_WIDTH 100//表头和表内容首列宽度
 #define INT_HEAD_ROW_HEIGHT 30//表头首行和第二行高度
@@ -32,6 +33,8 @@ public:
 
 	void mousePressEvent(QMouseEvent* event);
 	void contextMenuEvent(QContextMenuEvent* event);
+
+	void setReportFullPath(QString str);//设置报表全路径
 private:
 	void initFrame();
 
@@ -41,8 +44,7 @@ private:
 	void resetFirstColumnContent(QStringList strLst);//重新设置
 	void setFirstRowContent(QString str);//设置表格首行内容，即设备名称
 	void setSecondRowContent(QStringList strlst);//设置表格第二行显示内容
-	void InitTabHeader(QString str);//设置表头
-	
+	void InitTabHeader(QString str);//设置表头	
 
 	void deleteRow(int nindex);//删除某行
 	void deleteAllRows();
@@ -52,8 +54,8 @@ private:
 
 	void updateData();//存储值的格式如何定义？？，
 	                  //如果换成月报，年报，存储格式会不会变map还是vector还是结构体
-
-
+	void saveReport();//保存报表
+	void openReport();//打开报表
 
 public slots:
 	void slotDayTableShow();
@@ -64,6 +66,8 @@ public slots:
 	void SlotMenuClicked(QAction* act);
 	void tableContexMenuRequested(QPoint& pos);
 	void on_tableViewCustomContextMenuRequested(const QPoint& pos);
+
+	void sltOpenReport();
 
 private:
 	QMenu* m_pContextMenu;
@@ -77,6 +81,8 @@ private:
 	QStringList m_strlstFirColCon;//首列内容
 
 	stTableData m_stTableInfo;//表格信息
+	ReportType m_nReportType; //报表类型
+	QString m_strReportFullPath;//报表全路径
 };
 
 

@@ -1,9 +1,10 @@
-#include "ZTableWgt.h"
-
 #include<QHeaderView>
 #include<QScrollBar>
 #include<QPainter>
-
+#include <QFileDialog>
+#include<ActiveQt/QAxObject>
+#include<QDesktopServices>
+#include "ZTableWgt.h"
 
 ZTableWgt::ZTableWgt(QWidget* parent, int nrow, int ncolumn, QString str)
 	: QTableWidget(parent), m_nTabRow(nrow), m_nTabColumn(ncolumn) , m_strFirstRowContent(str)
@@ -21,10 +22,13 @@ ZTableWgt::ZTableWgt(QWidget* parent /* = Q_NULLPTR */, stTableData stTabInfo /*
 	m_strlstSecRowCon = m_stTableInfo.strlstSecondRowContent;
 	m_strlstFirColCon = m_stTableInfo.strlstFirstColContent;
 
+	m_nReportType = REPORT_DAY;
+
 	initFrame();
 
 	setFirstColumnContent(m_strlstFirColCon);
 	setSecondRowContent(m_strlstSecRowCon);
+	m_strReportFullPath = "";
 	//show();
 }
 
@@ -144,6 +148,135 @@ void ZTableWgt::updateData()
     //考虑是用QMap还是QVector
 	//QMap<QString, QList<QString>>,其中QString是遥测点，QList<QString>是对应的时间值，比如日表，QList存储1:00、2:00、3:00、......24:00点的对应的值
     //QVector<QVector<int>> array(rows,QVector<int>(cols))
+}
+
+void ZTableWgt::setReportFullPath(QString str)
+{
+	m_strReportFullPath = str;
+}
+
+void ZTableWgt::saveReport()
+{
+	//如果解决不了对原有文件重新写入或刷新的问题，就将原本文件删除，重新写文件
+	//获取保存路径
+	//QString filepath = QFileDialog::getSaveFileName(this, tr("Save"), ".", tr(" (*.xlsx)"));
+	if (!m_strReportFullPath.isEmpty()) {
+		QAxObject* Excel = new QAxObject(this);
+		//连接Excel控件
+		Excel->setControl("Excel.Application");
+		//不显示窗体
+		Excel->dynamicCall("SetVisible (bool Visible)", "false");
+		//不显示任何警告信息。如果为true那么在关闭是会出现类似“文件已修改，是否保存”的提示
+		Excel->setProperty("DisplayAlerts", false);
+		//获取工作簿集合
+		QAxObject* workbooks = Excel->querySubObject("WorkBooks");
+		//新建一个工作簿
+		workbooks->dynamicCall("Add");
+		//获取当前工作簿
+		QAxObject* workbook = Excel->querySubObject("ActiveWorkBook");
+		//获取工作表集合
+		QAxObject* worksheets = workbook->querySubObject("Sheets");
+		//获取工作表集合的工作表1，即sheet1
+		QAxObject* worksheet = worksheets->querySubObject("Item(int)", 1);
+
+		//表格左上角
+		QAxObject* Range = worksheet->querySubObject("Cells(int,int)", 1, 1);//保存的excel文件第二行
+		Range->dynamicCall("SetValue(const QString &)", this->model()->index(0, 0).data().toString());
+		//设置表头值，横表头
+		int ncol = this->columnCount() - 1;
+		for (int i = 1; i < ncol + 1; i++)
+		{
+			//设置二行各列
+			QAxObject* Range = worksheet->querySubObject("Cells(int,int)", 1, i+1);//保存的excel文件第二行
+			Range->dynamicCall("SetValue(const QString &)", this->model()->index(1,i).data().toString());
+			//Range->dynamicCall("SetValue(const QString &)", this->horizontalHeaderItem(i - 1)->text());
+		}
+		//设置表头值，纵表头
+		int nrow = this->rowCount() - 2;
+		for (int i = 1; i < nrow + 1; i++)
+		{
+			//设置第二列各行
+			QAxObject* Range = worksheet->querySubObject("Cells(int,int)", i+1, 1);//保存的excel文件第二行
+			Range->dynamicCall("SetValue(const QString &)", this->model()->index(i + 1, 0).data().toString());
+			//Range->dynamicCall("SetValue(const QString &)", this->horizontalHeaderItem(i - 1)->text());
+		}
+
+
+		//设置表格数据
+		int nrow1 = this->rowCount() - 2;
+		for (int i = 1; i < nrow1 + 1; i++)
+		{
+			for (int j = 1; j < this->columnCount() + 1; j++)
+			{
+				QAxObject* Range = worksheet->querySubObject("Cells(int,int)", i + 1, j);
+				//Range->dynamicCall("SetValue(const QString &)", this->item(i - 1, j - 1)->data(Qt::DisplayRole).toString());
+				//Range->dynamicCall("SetValue(const QString &)", this->item(i - 1, j - 1)->data(Qt::DisplayRole).toString());
+			}
+		}
+		workbook->dynamicCall("SaveAs(const QString&)", QDir::toNativeSeparators(m_strReportFullPath));//保存至filepath
+		workbook->dynamicCall("Close()");//关闭工作簿
+		Excel->dynamicCall("QUIt()");//关闭Excel
+		delete Excel;
+		Excel = NULL;
+		//qDebug() << "导出成功啦！！！";
+	}
+
+	switch (m_nReportType)
+	{
+	case REPORT_DAY:
+		//保存日报表
+		break;
+	case REPORT_MONTH:
+		//保存月报
+		break;
+	case REPORT_SECSON:
+		//保存季报
+		break;
+	case REPORT_YEAR:
+		//保存年报
+		break;
+	default:
+		break;
+	}
+}
+
+void ZTableWgt::openReport()
+{
+	if (m_strReportFullPath == "")
+	{
+		return;
+	}
+	if (QFile::exists(m_strReportFullPath))
+	{
+		QDesktopServices::openUrl(QUrl::fromLocalFile(m_strReportFullPath));
+	}
+	/*//解决路径中有中文问题
+	QDir dir("../MonitorSys/export/reports");
+	//dir.setFilter(QDir::Files | QDir::NoDotAndDotDot); // 过滤文件类型 
+	QStringList nameFilters;
+	nameFilters << "*.xls";	
+	QFileInfoList fileList = dir.entryInfoList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);// 获取文件信息列表 
+	if (fileList.isEmpty())
+		return;
+
+	QFileInfo file(m_strReportFullPath);
+	QString strFile = file.fileName();
+	QString path;
+	for (int nindex = 0; nindex < fileList.size(); nindex++)
+	{
+		QString str = fileList.at(nindex).fileName();
+		if (str == strFile)
+		{
+			path = fileList.at(0).absoluteFilePath(); //filePath();
+			break;
+		}
+	}	
+
+	if (QFile::exists(path))
+	{
+		QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+	}*/
+	
 }
 
 void ZTableWgt::InitTabHeader(QString str)
@@ -272,8 +405,7 @@ void ZTableWgt::tableContexMenuRequested(QPoint& pos)
 }
 void ZTableWgt::on_tableViewCustomContextMenuRequested(const QPoint& pos)
 {
-	//! 拓展：此处的pos函数可以使用QTableView的indexAt \
-        函数获取当前鼠标下控件的QModelIndex对象（可用于判断操作）
+	//! 拓展：此处的pos函数可以使用QTableView的indexAt 函数获取当前鼠标下控件的QModelIndex对象（可用于判断操作）
 	//Q_UNUSED(pos);
 	QTableWidgetItem* item = this->currentItem();
 	if (item == NULL)
@@ -302,6 +434,8 @@ void ZTableWgt::SlotMenuClicked(QAction* act)
 
 void ZTableWgt::slotDayTableShow()
 {
+	m_nReportType = REPORT_DAY;
+
 	QStringList strlstTime;
 	for (int n = 0; n < INT_DAY_TIME; n++)
 	{
@@ -314,6 +448,8 @@ void ZTableWgt::slotDayTableShow()
 
 void ZTableWgt::slotMonthTableShow()
 {
+	m_nReportType = REPORT_MONTH;
+
 	QStringList strlstTime;
 	for (int n = 1; n <= INT_MONTH_TIME; n++)
 	{
@@ -327,6 +463,8 @@ void ZTableWgt::slotMonthTableShow()
 
 void ZTableWgt::slotSeasonTableShow()
 {
+	m_nReportType = REPORT_SECSON;
+
 	QStringList strlstTime;
 	for (int n = 1; n <= INT_SEASON_TIME; n++)
 	{
@@ -339,6 +477,8 @@ void ZTableWgt::slotSeasonTableShow()
 
 void ZTableWgt::slotYearTableShow()
 {
+	m_nReportType = REPORT_YEAR;
+
 	QStringList strlstTime;
 	for (int n = 1; n <= INT_YEAR_TIME; n++)
 	{
@@ -348,6 +488,11 @@ void ZTableWgt::slotYearTableShow()
 	updateData();
 }
 
+void ZTableWgt::sltOpenReport()
+{
+	saveReport();
+	openReport();
+}
 
 //绘制m_frozenTableWgtde 的样式，字体、背景颜色等
 ZItemDelegate::ZItemDelegate(int type, QObject* parent)

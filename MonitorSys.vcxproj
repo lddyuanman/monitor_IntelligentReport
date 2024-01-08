@@ -73,6 +73,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Link>
+      <AdditionalDependencies>Qt5AxContainerd.lib;Qt5AxBased.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(QTDIR)\include\ActiveQt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
     <ClCompile>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -100,6 +109,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ZExportReportWgt.cpp" />
     <ClCompile Include="ZSetDateWgt.cpp" />
     <ClCompile Include="ZTableWgt.cpp" />
     <QtRcc Include="MonitorSys.qrc" />
@@ -116,13 +126,14 @@
     <QtMoc Include="ZTitleWgt.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="ZExportReportWgt.h" />
     <QtMoc Include="ZSetDateWgt.h" />
     <QtMoc Include="ZTableWgt.h" />
     <QtMoc Include="HCustomTabWgt.h" />
     <QtMoc Include="HExampleWgt.h" />
     <QtMoc Include="ZIntelligentReportWgt.h" />
-    <ClInclude Include="HDataStruct.h" />
-    <ClInclude Include="HGlobalVariable.h" />
+    <ClInclude Include="DataStruct.h" />
+    <ClInclude Include="GlobalVariable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

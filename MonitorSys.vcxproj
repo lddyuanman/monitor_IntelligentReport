@@ -109,6 +109,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ExcelExport.cpp" />
     <ClCompile Include="ZExportReportWgt.cpp" />
     <ClCompile Include="ZSetDateWgt.cpp" />
     <ClCompile Include="ZTableWgt.cpp" />
@@ -133,6 +134,7 @@
     <QtMoc Include="HExampleWgt.h" />
     <QtMoc Include="ZIntelligentReportWgt.h" />
     <ClInclude Include="DataStruct.h" />
+    <ClInclude Include="ExcelExport.h" />
     <ClInclude Include="GlobalVariable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

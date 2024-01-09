@@ -4,6 +4,8 @@
 #include <QFileDialog>
 #include<ActiveQt/QAxObject>
 #include<QDesktopServices>
+#include <QMessageBox>
+#include <QDebug>
 #include "ZTableWgt.h"
 
 ZTableWgt::ZTableWgt(QWidget* parent, int nrow, int ncolumn, QString str)
@@ -30,6 +32,8 @@ ZTableWgt::ZTableWgt(QWidget* parent /* = Q_NULLPTR */, stTableData stTabInfo /*
 	setSecondRowContent(m_strlstSecRowCon);
 	m_strReportFullPath = "";
 	//show();
+
+	m_pExcelExport = new ExcelExport();
 }
 
 ZTableWgt::~ZTableWgt()
@@ -142,12 +146,56 @@ void ZTableWgt::resetFirstColumnContent(QStringList strLst)
 	setFirstColumnContent(strLst);
 }
 
+void ZTableWgt::setTabData(QMap<QString, QStringList> mapData)
+{
+	m_mapData.clear();
+
+	if (mapData.size() < 0)
+	{
+		return;
+	}
+
+	//迭代器
+	QMapIterator<QString, QStringList> itr(mapData);
+	while (itr.hasNext())
+	{
+		itr.next();
+		//qDebug() << itr.key() << ":" << itr.value();
+		m_mapData.insert(itr.key(), itr.value());
+	}	
+}
+
 void ZTableWgt::updateData()
 {
 	//刷新数据,从第三行第二列开始填充数据，即（2，1）开始
     //考虑是用QMap还是QVector
-	//QMap<QString, QList<QString>>,其中QString是遥测点，QList<QString>是对应的时间值，比如日表，QList存储1:00、2:00、3:00、......24:00点的对应的值
+	//QMap<QString, QStringList>,其中QList<QString>是遥测点，QList<QString>是对应的时间值，比如日表，QList存储1:00、2:00、3:00、......24:00点的对应的值
     //QVector<QVector<int>> array(rows,QVector<int>(cols))
+	m_mapData.clear();
+	emit sigTableData(m_mapData,m_nReportType);
+
+	if (m_mapData.size() <= 0 || m_nTabRow <= 0 || m_nTabColumn <= 0)
+	{
+		return;
+	}
+
+	QString strdata1_1 = this->model()->index(1, 1).data().toString();//表头纵列值，如遥测点等
+	if ((m_mapData[strdata1_1].size() != (m_nTabRow - 2)) || (m_mapData.size() != (m_nTabColumn - 1)))
+	{
+		qDebug() << "table'column or table's row   is not same whit map data!";
+		return;
+	}
+
+	//从表格的第三行第二列（2，1）开始填充
+	for (int ncol = 1; ncol < m_nTabColumn; ncol++)
+	{
+		QString strdata = this->model()->index(1, ncol).data().toString();//表头纵列值，如遥测点等
+		for (int nrow = 2; nrow < m_nTabRow; nrow++)
+		{
+			setItem(nrow, ncol, new QTableWidgetItem(QString("%1").arg(m_mapData[strdata].at(nrow-2))));
+			item(nrow, ncol)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+		}
+	}		
 }
 
 void ZTableWgt::setReportFullPath(QString str)
@@ -157,87 +205,34 @@ void ZTableWgt::setReportFullPath(QString str)
 
 void ZTableWgt::saveReport()
 {
-	//如果解决不了对原有文件重新写入或刷新的问题，就将原本文件删除，重新写文件
-	//获取保存路径
-	//QString filepath = QFileDialog::getSaveFileName(this, tr("Save"), ".", tr(" (*.xlsx)"));
-	if (!m_strReportFullPath.isEmpty()) {
-		QAxObject* Excel = new QAxObject(this);
-		//连接Excel控件
-		Excel->setControl("Excel.Application");
-		//不显示窗体
-		Excel->dynamicCall("SetVisible (bool Visible)", "false");
-		//不显示任何警告信息。如果为true那么在关闭是会出现类似“文件已修改，是否保存”的提示
-		Excel->setProperty("DisplayAlerts", false);
-		//获取工作簿集合
-		QAxObject* workbooks = Excel->querySubObject("WorkBooks");
-		//新建一个工作簿
-		workbooks->dynamicCall("Add");
-		//获取当前工作簿
-		QAxObject* workbook = Excel->querySubObject("ActiveWorkBook");
-		//获取工作表集合
-		QAxObject* worksheets = workbook->querySubObject("Sheets");
-		//获取工作表集合的工作表1，即sheet1
-		QAxObject* worksheet = worksheets->querySubObject("Item(int)", 1);
-
-		//表格左上角
-		QAxObject* Range = worksheet->querySubObject("Cells(int,int)", 1, 1);//保存的excel文件第二行
-		Range->dynamicCall("SetValue(const QString &)", this->model()->index(0, 0).data().toString());
-		//设置表头值，横表头
-		int ncol = this->columnCount() - 1;
-		for (int i = 1; i < ncol + 1; i++)
-		{
-			//设置二行各列
-			QAxObject* Range = worksheet->querySubObject("Cells(int,int)", 1, i+1);//保存的excel文件第二行
-			Range->dynamicCall("SetValue(const QString &)", this->model()->index(1,i).data().toString());
-			//Range->dynamicCall("SetValue(const QString &)", this->horizontalHeaderItem(i - 1)->text());
-		}
-		//设置表头值，纵表头
-		int nrow = this->rowCount() - 2;
-		for (int i = 1; i < nrow + 1; i++)
-		{
-			//设置第二列各行
-			QAxObject* Range = worksheet->querySubObject("Cells(int,int)", i+1, 1);//保存的excel文件第二行
-			Range->dynamicCall("SetValue(const QString &)", this->model()->index(i + 1, 0).data().toString());
-			//Range->dynamicCall("SetValue(const QString &)", this->horizontalHeaderItem(i - 1)->text());
-		}
-
-
-		//设置表格数据
-		int nrow1 = this->rowCount() - 2;
-		for (int i = 1; i < nrow1 + 1; i++)
-		{
-			for (int j = 1; j < this->columnCount() + 1; j++)
-			{
-				QAxObject* Range = worksheet->querySubObject("Cells(int,int)", i + 1, j);
-				//Range->dynamicCall("SetValue(const QString &)", this->item(i - 1, j - 1)->data(Qt::DisplayRole).toString());
-				//Range->dynamicCall("SetValue(const QString &)", this->item(i - 1, j - 1)->data(Qt::DisplayRole).toString());
-			}
-		}
-		workbook->dynamicCall("SaveAs(const QString&)", QDir::toNativeSeparators(m_strReportFullPath));//保存至filepath
-		workbook->dynamicCall("Close()");//关闭工作簿
-		Excel->dynamicCall("QUIt()");//关闭Excel
-		delete Excel;
-		Excel = NULL;
-		//qDebug() << "导出成功啦！！！";
-	}
-
-	switch (m_nReportType)
+	if (m_strReportFullPath.isEmpty())
 	{
-	case REPORT_DAY:
-		//保存日报表
-		break;
-	case REPORT_MONTH:
-		//保存月报
-		break;
-	case REPORT_SECSON:
-		//保存季报
-		break;
-	case REPORT_YEAR:
-		//保存年报
-		break;
-	default:
-		break;
+		qDebug() << "file path is null!";
+		return;
 	}
+	m_pExcelExport->setSavePath(m_strReportFullPath);
+
+	
+	QStringList strlstCol;
+	for (int n = 1; n < this->model()->columnCount(); n++)
+	{
+		strlstCol.append(this->model()->index(1, n).data().toString());
+	}
+	m_pExcelExport->setHeadColumn(strlstCol);
+
+	QStringList strlstRow;
+	for (int n = 1; n < this->model()->rowCount(); n++)
+	{
+		strlstRow.append(this->model()->index(n + 1, 0).data().toString());
+	}
+	m_pExcelExport->setHeadRow(strlstRow);
+
+	//文件不存在，新建excel
+	m_pExcelExport->setRow(m_nTabRow);
+	m_pExcelExport->setColumn(m_nTabColumn);
+	m_pExcelExport->setName(m_strFirstRowContent);
+	m_pExcelExport->setExcelData(m_mapData);
+	m_pExcelExport->startExport();
 }
 
 void ZTableWgt::openReport()
@@ -339,18 +334,6 @@ void ZTableWgt::addRow(int nIndex)
 {
 }
 
-void ZTableWgt::contextMenuEvent(QContextMenuEvent* event)
-{
-	Q_UNUSED(event);
-	QMenu menu;
-	//添加右键菜单的选项
-	menu.addAction("方法1：选项1");
-	menu.addAction("方法1：选项2");
-	menu.addAction("方法1：选项3");
-	//显示menu菜单并设置其显示位置为鼠标位置
-	menu.exec(QCursor::pos());
-}
-
 void ZTableWgt::initFrame()
 {
 	horizontalHeader()->setVisible(false);//表头不可见
@@ -398,28 +381,6 @@ void ZTableWgt::initFrame()
 	show();
 }
 
-void ZTableWgt::tableContexMenuRequested(QPoint& pos)
-{
-	m_pContextMenu->addAction(m_pActionDel);
-	m_pContextMenu->exec(QCursor::pos());
-}
-void ZTableWgt::on_tableViewCustomContextMenuRequested(const QPoint& pos)
-{
-	//! 拓展：此处的pos函数可以使用QTableView的indexAt 函数获取当前鼠标下控件的QModelIndex对象（可用于判断操作）
-	//Q_UNUSED(pos);
-	QTableWidgetItem* item = this->currentItem();
-	if (item == NULL)
-	{
-		return;
-	}
-	QMenu menu;
-	//添加右键菜单的选项
-	menu.addAction("方法2：选项1");
-	menu.addAction("方法2：选项2");
-	menu.addAction("方法2：选项3");
-	//显示menu菜单并设置其显示位置为鼠标位置
-	menu.exec(QCursor::pos());
-}
 
 void ZTableWgt::SlotMenuClicked(QAction* act)
 {
@@ -490,6 +451,26 @@ void ZTableWgt::slotYearTableShow()
 
 void ZTableWgt::sltOpenReport()
 {
+	m_pExcelExport->setSavePath(m_strReportFullPath);
+	//文件存在并且不删除旧的文件
+	if (m_pExcelExport->isFileExist(m_strReportFullPath))
+	{
+		if (m_pExcelExport->isFileOpen(m_strReportFullPath))
+		{
+			QMessageBox::warning(NULL, QString::fromLocal8Bit("警告"), QString::fromLocal8Bit("文件已打开！"));
+			qDebug() << "flie isn't delete. Be using!";
+			return;
+		}
+		else
+		{
+			if (!m_pExcelExport->isDeleteOldExcel())
+			{
+				openReport();
+				return;
+			}
+		}
+	}
+	
 	saveReport();
 	openReport();
 }

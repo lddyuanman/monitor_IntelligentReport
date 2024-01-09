@@ -9,8 +9,10 @@
 #include <QMouseEvent>
 #include <QMenu>
 #include <QAction>
+#include <QMap>
 #include "DataStruct.h"
 #include "GlobalVariable.h"
+#include "ExcelExport.h"
 
 #define INT_FIRST_COLUMN_WIDTH 100//表头和表内容首列宽度
 #define INT_HEAD_ROW_HEIGHT 30//表头首行和第二行高度
@@ -32,9 +34,11 @@ public:
 	~ZTableWgt();
 
 	void mousePressEvent(QMouseEvent* event);
-	void contextMenuEvent(QContextMenuEvent* event);
 
 	void setReportFullPath(QString str);//设置报表全路径
+	void setTabData(QMap<QString, QStringList>  mapData);//赋值
+	void updateData();//存储值的格式如何定义？？，
+					  //如果换成月报，年报，存储格式会不会变map还是vector还是结构体
 private:
 	void initFrame();
 
@@ -51,9 +55,6 @@ private:
 	void addRow(int nindex);//增加某行
 	void addRows(int nrows);
 
-
-	void updateData();//存储值的格式如何定义？？，
-	                  //如果换成月报，年报，存储格式会不会变map还是vector还是结构体
 	void saveReport();//保存报表
 	void openReport();//打开报表
 
@@ -64,11 +65,12 @@ public slots:
 	void slotYearTableShow();
 
 	void SlotMenuClicked(QAction* act);
-	void tableContexMenuRequested(QPoint& pos);
-	void on_tableViewCustomContextMenuRequested(const QPoint& pos);
+	//void tableContexMenuRequested(QPoint& pos);
+	//void on_tableViewCustomContextMenuRequested(const QPoint& pos);
 
 	void sltOpenReport();
-
+signals:
+	void sigTableData(QMap<QString, QStringList> &mapData, ReportType type);
 private:
 	QMenu* m_pContextMenu;
 	QAction* m_pActionDel;
@@ -79,10 +81,13 @@ private:
 	QString m_strFirstRowContent;//首行内容，即设备名称
 	QStringList m_strlstSecRowCon;//第二行内容
 	QStringList m_strlstFirColCon;//首列内容
+	QMap<QString, QStringList> m_mapData;//存储表格内容，key为遥测点，T为对应的各个时间点的值,即一个遥测点对应一列值
 
 	stTableData m_stTableInfo;//表格信息
 	ReportType m_nReportType; //报表类型
 	QString m_strReportFullPath;//报表全路径
+
+	ExcelExport* m_pExcelExport;//excel文件操作
 };
 
 

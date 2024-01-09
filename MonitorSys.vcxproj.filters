@@ -64,6 +64,9 @@
     <ClCompile Include="ExcelExport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MysqlAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ZTitleWgt.h">
@@ -87,15 +90,18 @@
     <QtMoc Include="ZExportReportWgt.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="ExcelExport.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MysqlAPI.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GlobalVariable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ExcelExport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

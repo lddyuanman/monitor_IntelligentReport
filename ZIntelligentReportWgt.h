@@ -1,7 +1,7 @@
 #pragma once
 /*
 * 智能报表窗口: 顶部窗口和报表窗口
-* 
+* 只处理窗口之间的交互，不处理数据
 */
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QLabel>
@@ -11,6 +11,7 @@
 #include <QTableWidget>
 #include <QRect>
 #include <QMenu>
+#include <QMap>
 #include "HCustomTabWgt.h"
 #include "ZTableWgt.h"
 #include "DataStruct.h"
@@ -39,6 +40,8 @@ public:
     //void mouseReleaseEvent(QMouseEvent* event);
     //void wheelEvent(QWheelEvent* event);        // 用鼠标滚轮事件实现图像放大缩小
     void getReportPath(QString &strpath);
+    void setData(QMap<QString, QStringList> mapdata);
+    void setTableData();
 private:
     void initUI();
     void initTopWgt();
@@ -49,8 +52,9 @@ signals:
     void sigDayTableShow();
     void sigMonthTableShow();
 	void sigSeasonTableShow();
-    void sigYearTableShow();
-    
+    void sigYearTableShow();    
+
+    void sigGetReportData(QMap<QString, QStringList> &mapdata, ReportType type);
 
 public slots:
     void slotShowMenu(QPoint pos);
@@ -62,6 +66,8 @@ public slots:
     void slotMoreBtnClicked();
 
     void slotOpenDirectory();
+
+    void slotGetReportData(QMap<QString, QStringList>& mapdata, ReportType type);
 private:
     QWidget* m_pTopWgt;//顶部窗口
     QLabel* m_plbTitle;

@@ -122,6 +122,16 @@ void ZIntelligentReportWgt::getReportPath(QString &strpath)
     strpath = QString("%1/export/reports/%2%3(%4).xls").arg(str).arg(strName).arg(strType).arg(current_date);
 }
 
+void ZIntelligentReportWgt::setData(QMap<QString, QStringList>  mapdata)
+{
+    m_pTabWgt->setTabData(mapdata);
+}
+
+void ZIntelligentReportWgt::setTableData()
+{
+    m_pTabWgt->updateData();
+}
+
 void ZIntelligentReportWgt::initUI()
 {
     this->setGeometry(m_rectReport);
@@ -257,6 +267,9 @@ void ZIntelligentReportWgt::initReportWgt()
 	connect(this, SIGNAL(sigMonthTableShow()), m_pTabWgt, SLOT(slotMonthTableShow()));
     connect(this, SIGNAL(sigSeasonTableShow()), m_pTabWgt, SLOT(slotSeasonTableShow()));
 	connect(this, SIGNAL(sigYearTableShow()), m_pTabWgt, SLOT(slotYearTableShow()));
+  
+    bool bnet = connect(m_pTabWgt, &ZTableWgt::sigTableData, this, &ZIntelligentReportWgt::slotGetReportData);
+
 }
 
 void ZIntelligentReportWgt::initMenuWgt()
@@ -365,6 +378,12 @@ void ZIntelligentReportWgt::slotOpenDirectory()
       第五个参数是QFileDialog::DontResolveSymlinks，这里用为即使选中的文件为快捷方式或链接，路径也只显示现有路径而不会跳转；QFileDialog::ShowDirsOnly表示只显示文件夹；*/
 
     //strFileName = QDir::toNativeSeparators(strFileName);//Linux斜杠转Windows反斜杠
+}
+
+void ZIntelligentReportWgt::slotGetReportData(QMap<QString, QStringList>& mapdata, ReportType type)
+{
+    emit sigGetReportData(mapdata,type);
+    m_pTabWgt->setTabData(mapdata);
 }
 
 void ZIntelligentReportWgt::slotDayBtnClicked()

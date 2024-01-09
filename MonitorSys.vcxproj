@@ -110,6 +110,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ExcelExport.cpp" />
+    <ClCompile Include="MysqlAPI.cpp" />
     <ClCompile Include="ZExportReportWgt.cpp" />
     <ClCompile Include="ZSetDateWgt.cpp" />
     <ClCompile Include="ZTableWgt.cpp" />
@@ -127,6 +128,7 @@
     <QtMoc Include="ZTitleWgt.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="MysqlAPI.h" />
     <QtMoc Include="ZExportReportWgt.h" />
     <QtMoc Include="ZSetDateWgt.h" />
     <QtMoc Include="ZTableWgt.h" />
@@ -134,7 +136,7 @@
     <QtMoc Include="HExampleWgt.h" />
     <QtMoc Include="ZIntelligentReportWgt.h" />
     <ClInclude Include="DataStruct.h" />
-    <ClInclude Include="ExcelExport.h" />
+    <QtMoc Include="ExcelExport.h" />
     <ClInclude Include="GlobalVariable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

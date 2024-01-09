@@ -8,8 +8,16 @@ MonitorSys::MonitorSys(QWidget *parent)
     ui.setupUi(this);
     getScreenSize();
 
-    
     initUI();
+
+    m_pMysql = new MysqlAPI();
+	//可以建立数据库和界面之间的信号-槽函数
+	bool b = connect(m_pIntelligentReportWgt, &ZIntelligentReportWgt::sigGetReportData, m_pMysql, &MysqlAPI::slotGetData);
+
+    if (m_pMysql->isConnect())
+    {
+        m_pIntelligentReportWgt->setTableData();
+    }    
 }
 
 MonitorSys::~MonitorSys()
@@ -109,10 +117,10 @@ void MonitorSys::initUI()
     stTableData stTabDataInfo;
     stTabDataInfo.begin = QPoint(0, 0);
     stTabDataInfo.end = QPoint(1550, 750);
-    stTabDataInfo.ncolumn = 21;
+    stTabDataInfo.ncolumn = 22;
     stTabDataInfo.nrow = 26;
     stTabDataInfo.strFirstRowContent = QString::fromLocal8Bit("设备名称");
-    for (int n = 0;n <20; n++)
+    for (int n = 0;n <21; n++)
     {
         stTabDataInfo.strlstSecondRowContent.append(QString::fromLocal8Bit("遥测%1").arg(n));
     }

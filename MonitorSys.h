@@ -5,6 +5,7 @@
 #include "ZTitleWgt.h"
 #include "ZIntelligentReportWgt.h"
 #include "DataStruct.h"
+#include "MysqlAPI.h"
 
 #define INT_NORMAL_HEIGHT     800
 #define INT_NORMAL_WIDTH     1500
@@ -39,6 +40,7 @@ private:
 
     ZMonSysTitleWgt* m_pTitleWgt;
     ZIntelligentReportWgt* m_pIntelligentReportWgt;
+    MysqlAPI* m_pMysql;
 
     int m_nScreenWidth;
     int m_nSCreenHeight;

@@ -3,7 +3,7 @@
 #include <QMessageBox>
 //#include <QPushButton>
 #include <QDebug>
-#include"ExcelExport.h"
+#include "ExcelExport.h"
 
 ExcelExport::ExcelExport()
 {
@@ -12,7 +12,14 @@ ExcelExport::ExcelExport()
 
 ExcelExport::~ExcelExport()
 {
-	endExport();
+	if (m_pExcel != NULL)
+	{
+		delete m_pExcel;
+	}
+	if (m_pWorkbook != NULL)
+	{
+		delete m_pWorkbook;
+	}
 }
 
 
@@ -367,7 +374,7 @@ void ExcelExport::startExport()
 		}
 	}
 	
-	//宽度自适应
+	//宽度自适应,解决数据过长时，excel显示格式异常问题
 	auto range = worksheet->querySubObject("UsedRange");
 	QAxObject* cells = range->querySubObject("Columns");
 	if (cells)

@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QMap>
+#include <QTimer>
 #include "DataStruct.h"
 #include "GlobalVariable.h"
 #include "ExcelExport.h"
@@ -39,6 +40,7 @@ public:
 	void setTabData(QMap<QString, QStringList>  mapData);//赋值
 	void updateData();//存储值的格式如何定义？？，
 					  //如果换成月报，年报，存储格式会不会变map还是vector还是结构体
+	void startTimer();
 private:
 	void initFrame();
 
@@ -64,17 +66,16 @@ public slots:
 	void slotSeasonTableShow();
 	void slotYearTableShow();
 
-	void SlotMenuClicked(QAction* act);
-	//void tableContexMenuRequested(QPoint& pos);
-	//void on_tableViewCustomContextMenuRequested(const QPoint& pos);
-
+	//void SlotMenuClicked(QAction* act);
+	
 	void sltOpenReport();
+	void slotTimeout();
 signals:
 	void sigTableData(QMap<QString, QStringList> &mapData, ReportType type);
 private:
 	QMenu* m_pContextMenu;
 	QAction* m_pActionDel;
-
+	QTimer* m_pTimerUpadate;
 
 	int m_nTabRow;
 	int m_nTabColumn;

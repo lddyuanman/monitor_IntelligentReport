@@ -1,6 +1,6 @@
 #pragma once
 #include <QtWidgets/QWidget>
-#include<QMouseEvent>
+#include <QMouseEvent>
 #include "ui_MonitorSys.h"
 #include "ZTitleWgt.h"
 #include "ZIntelligentReportWgt.h"
@@ -25,7 +25,7 @@ public:
 
     QSize getScreenSize();
     void  setDataInfo(stTableData stTabInfo);//从配置文件中获取信息
-    
+    void startTimer();
 
 private:
     void initUI();

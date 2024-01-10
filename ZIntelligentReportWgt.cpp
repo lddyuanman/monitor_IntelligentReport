@@ -1,11 +1,11 @@
-#include<QDateTime>
-#include<QMouseEvent>
+#include <QDateTime>
+#include <QMouseEvent>
 #include <QApplication>
 #include <QDir>
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QDesktopWidget>
-#include"ZIntelligentReportWgt.h"
+#include "ZIntelligentReportWgt.h"
 #include "GlobalVariable.h"
 
 ZIntelligentReportWgt::ZIntelligentReportWgt(QWidget* parent, stTableData stTableInfo)
@@ -25,7 +25,18 @@ ZIntelligentReportWgt::ZIntelligentReportWgt(QWidget* parent, QRect rect, int nr
 }
 ZIntelligentReportWgt::~ZIntelligentReportWgt()
 {
-
+    if (m_pTabWgt != NULL)
+    {
+        delete m_pTabWgt;
+    }
+    if (m_pSetDateWgt != NULL)
+    {
+        delete m_pSetDateWgt;
+    }
+    if (m_pExportWgt != NULL)
+    {
+        delete m_pExportWgt;
+    }
 }
 
 //实现鼠标拖拽移动
@@ -93,6 +104,11 @@ ZIntelligentReportWgt::~ZIntelligentReportWgt()
 //    }
 //    this->resize(currentWidth, currentHeight);          // 通过更新图像显示控件的大小来更新图像大小
 //}
+
+void ZIntelligentReportWgt::startTimer()
+{
+    m_pTabWgt->startTimer();
+}
 
 void ZIntelligentReportWgt::getReportPath(QString &strpath)
 {

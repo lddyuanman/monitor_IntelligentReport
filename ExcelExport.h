@@ -2,8 +2,8 @@
 /*
 * 处理excel表格导出功能接口
 */
-#include<QObject>
-#include<ActiveQt/QAxObject>
+#include <QObject>
+#include <ActiveQt/QAxObject>
 #include <QMap>
 
 class ExcelExport :public QObject

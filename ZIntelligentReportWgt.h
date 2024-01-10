@@ -42,6 +42,7 @@ public:
     void getReportPath(QString &strpath);
     void setData(QMap<QString, QStringList> mapdata);
     void setTableData();
+    void startTimer();
 private:
     void initUI();
     void initTopWgt();

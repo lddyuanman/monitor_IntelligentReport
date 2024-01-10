@@ -36,7 +36,7 @@ bool MysqlAPI::isConnect()
 
 void MysqlAPI::getDayData(QMap<QString, QStringList>& mapvalue)
 {
-	for (int n = 0; n < 21; n++)
+	for (int n = 1; n < 21; n++)
 	{
 		QString strKey = QString::fromLocal8Bit("Ò£²â%1").arg(n);
 		QStringList strlst;
@@ -50,7 +50,7 @@ void MysqlAPI::getDayData(QMap<QString, QStringList>& mapvalue)
 
 void MysqlAPI::getMonthData(QMap<QString, QStringList>& mapvalue)
 {
-	for (int n = 0; n < 21; n++)
+	for (int n = 1; n < 21; n++)
 	{
 		QString strKey = QString::fromLocal8Bit("Ò£²â%1").arg(n);
 		QStringList strlst;
@@ -64,7 +64,7 @@ void MysqlAPI::getMonthData(QMap<QString, QStringList>& mapvalue)
 
 void MysqlAPI::getSecsonData(QMap<QString, QStringList>& mapvalue)
 {
-	for (int n = 0; n < 21; n++)
+	for (int n = 1; n < 21; n++)
 	{
 		QString strKey = QString::fromLocal8Bit("Ò£²â%1").arg(n);
 		QStringList strlst;
@@ -78,7 +78,7 @@ void MysqlAPI::getSecsonData(QMap<QString, QStringList>& mapvalue)
 
 void MysqlAPI::getYearData(QMap<QString, QStringList>& mapvalue)
 {
-	for (int n = 0; n < 21; n++)
+	for (int n = 1; n < 21; n++)
 	{
 		QString strKey = QString::fromLocal8Bit("Ò£²â%1").arg(n);
 		QStringList strlst;

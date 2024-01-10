@@ -8,5 +8,6 @@ int main(int argc, char *argv[])
 
     MonitorSys w;
     w.show();
+    w.startTimer();
     return a.exec();
 }

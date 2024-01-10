@@ -26,6 +26,10 @@ MonitorSys::~MonitorSys()
     {
         delete m_pTitleWgt;
     }
+    if (m_pIntelligentReportWgt != NULL)
+    {
+        delete m_pIntelligentReportWgt;
+    }
 }
 
 //实现鼠标拖拽移动
@@ -82,6 +86,10 @@ void MonitorSys::showEvent(QShowEvent* e)
     QWidget::showEvent(e);
 }
 
+void MonitorSys::startTimer()
+{
+	m_pIntelligentReportWgt->startTimer();
+}
 
 void MonitorSys::setDataInfo(stTableData stTabInfo)
 {
@@ -117,10 +125,10 @@ void MonitorSys::initUI()
     stTableData stTabDataInfo;
     stTabDataInfo.begin = QPoint(0, 0);
     stTabDataInfo.end = QPoint(1550, 750);
-    stTabDataInfo.ncolumn = 22;
+    stTabDataInfo.ncolumn = 21;
     stTabDataInfo.nrow = 26;
     stTabDataInfo.strFirstRowContent = QString::fromLocal8Bit("设备名称");
-    for (int n = 0;n <21; n++)
+    for (int n = 1;n <21; n++)
     {
         stTabDataInfo.strlstSecondRowContent.append(QString::fromLocal8Bit("遥测%1").arg(n));
     }

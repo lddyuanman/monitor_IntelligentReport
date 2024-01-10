@@ -1,9 +1,9 @@
-#include<QHeaderView>
-#include<QScrollBar>
-#include<QPainter>
+#include <QHeaderView>
+#include <QScrollBar>
+#include <QPainter>
 #include <QFileDialog>
-#include<ActiveQt/QAxObject>
-#include<QDesktopServices>
+#include <ActiveQt/QAxObject>
+#include <QDesktopServices>
 #include <QMessageBox>
 #include <QDebug>
 #include "ZTableWgt.h"
@@ -34,11 +34,20 @@ ZTableWgt::ZTableWgt(QWidget* parent /* = Q_NULLPTR */, stTableData stTabInfo /*
 	//show();
 
 	m_pExcelExport = new ExcelExport();
+
+	//定时刷新
+	m_pTimerUpadate = new QTimer(this);
+	connect(m_pTimerUpadate, SIGNAL(timeout()), this, SLOT(slotTimeout()));
+	m_pTimerUpadate->setInterval(6000);//毫秒
 }
 
 ZTableWgt::~ZTableWgt()
 {
-
+	if (m_pTimerUpadate != NULL)
+	{
+		m_pTimerUpadate->stop();
+		delete m_pTimerUpadate;
+	}
 }
 
 void ZTableWgt::mousePressEvent(QMouseEvent* event) 
@@ -55,6 +64,15 @@ void ZTableWgt::mousePressEvent(QMouseEvent* event)
 		mousePressEvent(event);
 	}*/
 }
+
+void ZTableWgt::startTimer()
+{
+	if (!m_pTimerUpadate->isActive())
+	{
+		m_pTimerUpadate->start();
+	}
+}
+
 void ZTableWgt::setCurrentColumn(int ncolumn)
 {
 	setColumnCount(ncolumn);//设置列
@@ -168,10 +186,24 @@ void ZTableWgt::setTabData(QMap<QString, QStringList> mapData)
 void ZTableWgt::updateData()
 {
 	//刷新数据,从第三行第二列开始填充数据，即（2，1）开始
-    //考虑是用QMap还是QVector
-	//QMap<QString, QStringList>,其中QList<QString>是遥测点，QList<QString>是对应的时间值，比如日表，QList存储1:00、2:00、3:00、......24:00点的对应的值
-    //QVector<QVector<int>> array(rows,QVector<int>(cols))
-	m_mapData.clear();
+	//QMap<QString, QStringList>,其中QString是遥测点，QStringList是对应的时间值，比如日表，QStringList存储1:00、2:00、...、24:00点的对应的值
+	
+	//清楚表格数据，从第三行第二列开始清楚数据内容
+	if(m_nTabColumn < 0 || m_nTabRow <= 0)
+	{
+		return;
+	}
+	for (int nrow = 3; nrow < m_nTabRow; nrow++)
+	{
+		for (int ncol = 2; ncol < m_nTabColumn; ncol++)
+		{
+			this->removeCellWidget(nrow, ncol);
+		}
+	}
+	
+	
+	//获取数据
+	m_mapData.clear();	
 	emit sigTableData(m_mapData,m_nReportType);
 
 	if (m_mapData.size() <= 0 || m_nTabRow <= 0 || m_nTabColumn <= 0)
@@ -382,16 +414,16 @@ void ZTableWgt::initFrame()
 }
 
 
-void ZTableWgt::SlotMenuClicked(QAction* act)
-{
-	/*if (act == m_pActionDel)
-	{
-		int nRow = m_pSelectItem->row();
-		QTableWidgetItem* item =this->item(nRow, 1);
-
-		removeRow(nRow);
-	}*/
-}
+//void ZTableWgt::SlotMenuClicked(QAction* act)
+//{
+//	/*if (act == m_pActionDel)
+//	{
+//		int nRow = m_pSelectItem->row();
+//		QTableWidgetItem* item =this->item(nRow, 1);
+//
+//		removeRow(nRow);
+//	}*/
+//}
 
 void ZTableWgt::slotDayTableShow()
 {
@@ -473,6 +505,11 @@ void ZTableWgt::sltOpenReport()
 	
 	saveReport();
 	openReport();
+}
+
+void ZTableWgt::slotTimeout()
+{
+	updateData();
 }
 
 //绘制m_frozenTableWgtde 的样式，字体、背景颜色等

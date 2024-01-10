@@ -38,7 +38,8 @@ ZTableWgt::ZTableWgt(QWidget* parent /* = Q_NULLPTR */, stTableData stTabInfo /*
 	//∂® ±À¢–¬
 	m_pTimerUpadate = new QTimer(this);
 	connect(m_pTimerUpadate, SIGNAL(timeout()), this, SLOT(slotTimeout()));
-	m_pTimerUpadate->setInterval(6000);//∫¡√Î
+	//m_pTimerUpadate->setInterval(6000);//∫¡√Î
+	m_pTimerUpadate->setInterval(m_stTableInfo.ntime * 1000);//∫¡√Î
 }
 
 ZTableWgt::~ZTableWgt()
